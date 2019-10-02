@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'images_folder' => 'img',
+    'images_folder'      => 'img',
     'stylesheets_folder' => 'styles',
-    'scripts_folder' => 'js'
+    'scripts_folder'     => 'js',
 ];
