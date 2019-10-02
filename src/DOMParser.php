@@ -1,0 +1,16 @@
+<?php
+
+
+namespace Mwakisha\Tarablade;
+
+use HungCP\PhpSimpleHtmlDom\HtmlDomParser;
+use Illuminate\Support\Facades\File;
+
+class DOMParser
+{
+    public static function getHtml($filename)
+    {
+       return File::exists($filename) ? HtmlDomParser::file_get_html($filename)
+                                      : HtmlDomParser::str_get_html($filename);
+    }
+}

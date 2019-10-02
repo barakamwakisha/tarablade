@@ -1,39 +1,32 @@
-<?php namespace Mwakisha\Tarablade;
+<?php
+
+
+namespace Mwakisha\Tarablade;
+
 
 use Illuminate\Support\ServiceProvider;
 
-class TarabladeServiceProvider extends ServiceProvider 
+class TarabladeServiceProvider extends ServiceProvider
 {
-    
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register() 
-    {
-        $configPath = __DIR__ . '/../config/tarablade.php';
-        $this->mergeConfigFrom($configPath, 'tarablade');
-    }
 
-    /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
     public function boot()
     {
-        $configPath = __DIR__ . '/../config/tarablade.php';
-        $this->publishes([$configPath => $this->getConfigPath()], 'config');
+        if($this->app->runningInConsole()) {
+            $this->registerPublishing();
+        }
     }
 
-    /**
-     * Get the config path
-     *
-     * @return string
-     */
-    protected function getConfigPath()
+    public function register()
     {
-        return config_path('tarablade.php');
+        $this->commands([
+            Console\ImportCommand::class
+        ]);
+    }
+
+    protected function registerPublishing()
+    {
+        $this->publishes([
+            __DIR__.'/../config/tarablade.php' => config_path('tarablade.php')
+        ], 'tarablade-config');
     }
 }
