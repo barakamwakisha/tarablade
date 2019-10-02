@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Mwakisha\Tarablade;
 
 use HungCP\PhpSimpleHtmlDom\HtmlDomParser;
@@ -10,7 +9,7 @@ class DOMParser
 {
     public static function getHtml($filename)
     {
-       return File::exists($filename) ? HtmlDomParser::file_get_html($filename)
+        return File::exists($filename) ? HtmlDomParser::file_get_html($filename)
                                       : HtmlDomParser::str_get_html($filename);
     }
 }

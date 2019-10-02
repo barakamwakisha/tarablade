@@ -1,17 +1,14 @@
 <?php
 
-
 namespace Mwakisha\Tarablade;
-
 
 use Illuminate\Support\ServiceProvider;
 
 class TarabladeServiceProvider extends ServiceProvider
 {
-
     public function boot()
     {
-        if($this->app->runningInConsole()) {
+        if ($this->app->runningInConsole()) {
             $this->registerPublishing();
         }
     }
@@ -19,14 +16,14 @@ class TarabladeServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands([
-            Console\ImportCommand::class
+            Console\ImportCommand::class,
         ]);
     }
 
     protected function registerPublishing()
     {
         $this->publishes([
-            __DIR__.'/../config/tarablade.php' => config_path('tarablade.php')
+            __DIR__.'/../config/tarablade.php' => config_path('tarablade.php'),
         ], 'tarablade-config');
     }
 }
