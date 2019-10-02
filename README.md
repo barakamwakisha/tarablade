@@ -4,6 +4,6 @@
 </p>
 
 # Introduction
-
+[![Build Status](https://travis-ci.org/barakamwakisha/tarablade.svg?branch=develop)](https://travis-ci.org/barakamwakisha/tarablade)
 [![StyleCI](https://github.styleci.io/repos/212110481/shield?branch=develop)](https://github.styleci.io/repos/212110481)  
 A package that quickly converts plain HTML files into Blade templates and integrates them into a Laravel project, together with their accompanying assets.
