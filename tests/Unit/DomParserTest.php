@@ -1,15 +1,12 @@
 <?php
 
-
 namespace Mwakisha\Tarablade\Tests;
-
 
 use Mwakisha\Tarablade\DomParser;
 use Orchestra\Testbench\TestCase;
 
 class DomParserTest extends TestCase
 {
-
     /** @test */
     public function dom_parser_can_parse_html_text()
     {
@@ -61,6 +58,7 @@ class DomParserTest extends TestCase
 
     /**
      * @param $html
+     *
      * @return array
      */
     public function getResourcesCount($html)
@@ -71,7 +69,7 @@ class DomParserTest extends TestCase
         $scriptsNumber = 0;
 
         foreach ($html->find('link') as $link) {
-            if ($link->type == "text/css" || $link->rel == "stylesheet") {
+            if ($link->type == 'text/css' || $link->rel == 'stylesheet') {
                 $stylesheetsNumber++;
             }
         }
@@ -87,6 +85,7 @@ class DomParserTest extends TestCase
         foreach ($html->find('script') as $anchorLink) {
             $scriptsNumber++;
         }
-        return array($stylesheetsNumber, $imagesNumber, $anchorLinksNumber, $scriptsNumber);
+
+        return [$stylesheetsNumber, $imagesNumber, $anchorLinksNumber, $scriptsNumber];
     }
 }
