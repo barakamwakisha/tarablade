@@ -5,7 +5,7 @@ namespace Mwakisha\Tarablade;
 use HungCP\PhpSimpleHtmlDom\HtmlDomParser;
 use Illuminate\Support\Facades\File;
 
-class DOMParser
+class DomParser
 {
     public static function getHtml($filename)
     {

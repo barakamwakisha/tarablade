@@ -15,7 +15,7 @@ class TarabladeFileParser
 
     public function importImages()
     {
-        $html = DOMParser::getHtml($this->filename);
+        $html = DomParser::getHtml($this->filename);
 
         foreach ($html->find('img') as $element) {
             if (preg_match('/^(www|https|http)/', $element->src) === 0) {
@@ -55,7 +55,7 @@ class TarabladeFileParser
     {
         $resources = [];
 
-        $html = DOMParser::getHtml($this->filename);
+        $html = DomParser::getHtml($this->filename);
 
         // Find all <a> tags
         foreach ($html->find('a') as $element) {
