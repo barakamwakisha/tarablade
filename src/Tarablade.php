@@ -42,8 +42,8 @@ class Tarablade
         }
     }
 
-
-    public static function getAbsolutePath($path) {
+    public static function getAbsolutePath($path)
+    {
         $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
         $absolutes = array();
@@ -58,13 +58,34 @@ class Tarablade
         return implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
+    public static function createFolder($folderPath)
+    {
+        if(!file_exists($folderPath)) {
+            mkdir($folderPath, 0777);
+        }
+    }
 
-//    public static function createFolder($folderPath)
-//    {
-//        if (!mkdir($folderPath, 0777)) {
-//            throw new \Exception('Unable to create folder at '.$folderPath);
-//        }
-//    }
+    public static function deleteFolder($folderPath)
+    {
+        if(file_exists($folderPath)) {
+            rmdir($folderPath);
+        }
+    }
+
+    public static function validateAssetsDestinationFolders()
+    {
+        self::validateImagesDestinationFolder();
+        self::validateStylesDestinationFolder();
+        self::validateScriptsDestinationFolder();
+    }
+
+    public static function createAssetsDestinationFolders()
+    {
+        self::createImagesDestinationFolder();
+        self::createStylesDestinationFolder();
+        self::createScriptsDestinationFolder();
+    }
+
     public static function createImagesDestinationFolder()
     {
         if (!File::isDirectory(self::getImagesFolderPath())) {

@@ -8,6 +8,7 @@ use Mwakisha\Tarablade\Exceptions\FolderAlreadyExistsException;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Tarablade;
+use mysql_xdevapi\Exception;
 use Orchestra\Testbench\TestCase;
 
 class TarabladeTest extends TestCase
@@ -77,32 +78,48 @@ class TarabladeTest extends TestCase
         $this->assertNotNull(Tarablade::validateDirectoryExists(__DIR__.'/../Feature/NonExistent/'));
     }
 
-//     TODO: Test Tarablade asset folder creation
+    /** @test */
+    public function tarablade_can_successfully_create_a_folder()
+    {
+        Tarablade::createFolder(__DIR__.'/../Feature/TestAssets/test_folder');
+        $this->assertDirectoryExists(__DIR__.'/../Feature/TestAssets/test_folder');
+    }
 
-//     TODO: Test Tarablade destination asset folders validation
+    /** @test */
+    public function tarablade_can_successfully_delete_a_folder()
+    {
+        Tarablade::deleteFolder(__DIR__.'/../Feature/TestAssets/test_folder');
+        $this->assertDirectoryNotExists(__DIR__.'/../Feature/TestAssets/test_folder');
+    }
 
-//    /** @test */
-//    public function tarablade_throws_exception_if_specified_destination_image_asset_folder_already_exists()
-//    {
-//
-//        $this->withoutExceptionHandling();
-//        Config::set("tarablade.images_folder", "images");
-//
-//
-//        Tarablade::createImagesDestinationFolder();
-//        $this->expectException(FolderAlreadyExistsException::class);
-//        $this->assertNotNull(Tarablade::validateAssetDestinationFolders());
-//    }
+    /** @test */
+    public function tarablade_can_validate_assets_destination_folders()
+    {
+        Config::set("tarablade.images_folder", "images");
+        Config::set("tarablade.scripts_folder", "scripts");
+        Config::set("tarablade.stylesheets_folder", "css");
 
-//    /** @test */
-//    public function tarablade_does_not_throw_exception_if_specified_destination_image_asset_folder_does_not_exists()
-//    {
-//        Config::set("tarablade.images_folder", "images");
-//
-////        $this->assertNull(Tarablade::validateAssetDestinationFolders());
-//    }
+        $this->assertNull(Tarablade::validateAssetsDestinationFolders());
+    }
 
+    /** @test */
+    public function tarablade_can_create_assets_destination_folders()
+    {
+        Tarablade::deleteFolder(Tarablade::getImagesFolderPath());
+        Tarablade::deleteFolder(Tarablade::getScriptsFolderPath());
+        Tarablade::deleteFolder(Tarablade::getStylesFolderPath());
 
+        Config::set("tarablade.images_folder", "images");
+        Config::set("tarablade.scripts_folder", "scripts");
+        Config::set("tarablade.stylesheets_folder", "css");
 
+        $this->assertNull(Tarablade::createAssetsDestinationFolders());
+        $this->assertNull(Tarablade::validateDirectoryExists(Tarablade::getImagesFolderPath()));
+        $this->assertNull(Tarablade::validateDirectoryExists(Tarablade::getScriptsFolderPath()));
+        $this->assertNull(Tarablade::validateDirectoryExists(Tarablade::getStylesFolderPath()));
 
+        Tarablade::deleteFolder(Tarablade::getImagesFolderPath());
+        Tarablade::deleteFolder(Tarablade::getScriptsFolderPath());
+        Tarablade::deleteFolder(Tarablade::getStylesFolderPath());
+    }
 }
