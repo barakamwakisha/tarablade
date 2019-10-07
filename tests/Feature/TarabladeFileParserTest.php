@@ -1,6 +1,6 @@
 <?php
 
-namespace Mwakisha\Tarablade\Tests;
+namespace Mwakisha\Tarablade\Tests\Feature;
 
 use Mwakisha\Tarablade\TarabladeFileParser;
 use Orchestra\Testbench\TestCase;

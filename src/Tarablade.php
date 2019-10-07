@@ -11,17 +11,17 @@ class Tarablade
 {
     public static function getImagesFolderPath()
     {
-        return public_path(config('tarablade.images_folder'));
+        return self::getAbsolutePath(public_path(config('tarablade.images_folder')));
     }
 
     public static function getStylesFolderPath()
     {
-        return public_path(config('tarablade.stylesheets_folder'));
+        return self::getAbsolutePath(public_path(config('tarablade.stylesheets_folder')));
     }
 
     public static function getScriptsFolderPath()
     {
-        return public_path(config('tarablade.scripts_folder'));
+        return self::getAbsolutePath(public_path(config('tarablade.scripts_folder')));
     }
 
     public static function validateFileExists($filepath)
@@ -33,59 +33,86 @@ class Tarablade
         }
     }
 
-    public static function validateSourceDirectory($path)
+    public static function validateDirectoryExists($path)
     {
-        if (!File::isDirectory($path)) {
+        if (!File::isDirectory($path) || ! File::exists($path)) {
             throw new TemplateDirectoryNotFoundException(
                 'Directory at '.$path.' does not exists'
             );
         }
     }
 
-    public static function validateAssetDestinationFolders()
-    {
-        if (File::isDirectory(self::getImagesFolderPath())) {
-            throw new FolderAlreadyExistsException(
-                'A folder with the name '.config('tarablade.images_folder').' already exists in the '.
-                'public folder. Please rename it or change the images_folder name in the config file.'
-            );
-        } elseif (File::isDirectory(self::getStylesFolderPath())) {
-            throw new FolderAlreadyExistsException(
-                'A folder with the name '.config('tarablade.stylesheets_folder').' already exists in the '.
-                'public folder. Please rename it or change the stylesheets_folder name in the config file.'
-            );
-        } elseif (File::isDirectory(self::getScriptsFolderPath())) {
-            throw new FolderAlreadyExistsException(
-                'A folder with the name '.config('tarablade.scripts_folder').' already exists in the '.
-                'public folder. Please rename it or change the scripts_folder name in the config file.'
-            );
+
+    public static function getAbsolutePath($path) {
+        $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
+        $absolutes = array();
+        foreach ($parts as $part) {
+            if ('.' == $part) continue;
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
         }
+        return implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
-    public static function createAssetDestinationFolders()
+
+//    public static function createFolder($folderPath)
+//    {
+//        if (!mkdir($folderPath, 0777)) {
+//            throw new \Exception('Unable to create folder at '.$folderPath);
+//        }
+//    }
+    public static function createImagesDestinationFolder()
     {
         if (!File::isDirectory(self::getImagesFolderPath())) {
             File::makeDirectory(self::getImagesFolderPath(), 0777, true, true);
         }
+    }
 
+    public static function createStylesDestinationFolder()
+    {
         if (!File::isDirectory(self::getStylesFolderPath())) {
             File::makeDirectory(self::getStylesFolderPath(), 0777, true, true);
         }
+    }
 
+    public static function createScriptsDestinationFolder()
+    {
         if (!File::isDirectory(self::getScriptsFolderPath())) {
             File::makeDirectory(self::getScriptsFolderPath(), 0777, true, true);
         }
     }
 
-    public static function cleanPath($path)
+    public static function validateImagesDestinationFolder()
     {
-        return rtrim($path, '/\\');
+        if (file_exists(self::getImagesFolderPath()) && is_dir(self::getImagesFolderPath())) {
+            throw new FolderAlreadyExistsException(
+                'A folder with the name ' . config('tarablade.images_folder') . ' already exists in the ' .
+                'public folder. Please rename it or change the images_folder name in the config file.'
+            );
+        }
     }
 
-    public static function createFolder($folderPath)
+    public static function validateStylesDestinationFolder()
     {
-        if (!mkdir($folderPath, 0777)) {
-            throw new \Exception('Unable to create folder at '.$folderPath);
+        if (File::exists(self::getStylesFolderPath())) {
+            throw new FolderAlreadyExistsException(
+                'A folder with the name ' . config('tarablade.stylesheets_folder') . ' already exists in the ' .
+                'public folder. Please rename it or change the stylesheets_folder name in the config file.'
+            );
+        }
+    }
+
+    public static function validateScriptsDestinationFolder()
+    {
+        if (File::exists(self::getScriptsFolderPath())) {
+            throw new FolderAlreadyExistsException(
+                'A folder with the name ' . config('tarablade.scripts_folder') . ' already exists in the ' .
+                'public folder. Please rename it or change the scripts_folder name in the config file.'
+            );
         }
     }
 }

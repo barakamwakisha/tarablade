@@ -1,6 +1,6 @@
 <?php
 
-namespace Mwakisha\Tarablade\Tests;
+namespace Mwakisha\Tarablade\Tests\Unit;
 
 use Mwakisha\Tarablade\DomParser;
 use Orchestra\Testbench\TestCase;

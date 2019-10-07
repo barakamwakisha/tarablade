@@ -35,23 +35,23 @@ class ImportCommand extends Command
 
         try {
             $this->info('Checking if the directory at '.$path.' exists');
-            Tarablade::validateSourceDirectory($path);
+            Tarablade::validateDirectoryExists($path);
             $this->comment('Template directory found');
 
             $this->comment("Searching for 'index.html' in ".$path);
-            Tarablade::validateFileExists(Tarablade::cleanPath($path).'/index.html');
+            Tarablade::validateFileExists(Tarablade::getAbsolutePath($path).'/index.html');
             $this->comment('index.html file found');
 
             $this->info('Starting template import...');
 
-            Tarablade::validateAssetDestinationFolders();
-            Tarablade::createAssetDestinationFolders();
+//            Tarablade::validateAssetDestinationFolders();
+//            Tarablade::createAssetDestinationFolders();
 
             $this->info('Importing images...');
 
             // TODO: Refactor to scan all html files in folder
 
-            $parser = new TarabladeFileParser(Tarablade::cleanPath($path).'/index.html');
+            $parser = new TarabladeFileParser(Tarablade::getAbsolutePath($path).'/index.html');
             $parser->importImages();
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
