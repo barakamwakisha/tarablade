@@ -31,6 +31,8 @@ class ImportCommand extends Command
 
         sleep(1);
 
+        Tarablade::validateTemplateNamespace();
+
         $path = $this->ask('Where is the directory with the HTML files and assets located? ');
 
         try {
@@ -39,20 +41,19 @@ class ImportCommand extends Command
             $this->comment('Template directory found');
 
             $this->comment("Searching for 'index.html' in ".$path);
-            Tarablade::validateFileExists(Tarablade::getAbsolutePath($path).'/index.html');
+            Tarablade::validateFileExists($path.'/index.html');
             $this->comment('index.html file found');
 
             $this->info('Starting template import...');
 
-//            Tarablade::validateAssetDestinationFolders();
-//            Tarablade::createAssetDestinationFolders();
+//            Tarablade::validateAssetsDestinationFolders();
+            Tarablade::createAssetsDestinationFolders();
 
             $this->info('Importing images...');
 
-            // TODO: Refactor to scan all html files in folder
+            $parser = new TarabladeFileParser('/' . Tarablade::getAbsolutePath($path).'/index.html');
+            $parser->importImagesFromAllTemplates();
 
-            $parser = new TarabladeFileParser(Tarablade::getAbsolutePath($path).'/index.html');
-            $parser->importImages();
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
         }

@@ -122,4 +122,12 @@ class TarabladeTest extends TestCase
         Tarablade::deleteFolder(Tarablade::getScriptsFolderPath());
         Tarablade::deleteFolder(Tarablade::getStylesFolderPath());
     }
+
+    /** @test */
+    public function tarablade_can_get_template_namespace()
+    {
+        Config::set("tarablade.template_namespace", "admin_panel");
+        $this->assertNotNull(Tarablade::getTemplateNamespace());
+        $this->assertEquals("admin_panel", Tarablade::getTemplateNamespace());
+    }
 }
