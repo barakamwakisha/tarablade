@@ -15,6 +15,7 @@ class TarabladeServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/tarablade.php', 'tarablade');
         $this->commands([
             Console\ImportCommand::class,
         ]);

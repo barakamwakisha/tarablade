@@ -18,7 +18,9 @@ class TarabladeTest extends TestCase
     public function tarablade_can_get_absolute_path()
     {
         $rawPath = 'this/is/../a/./test/.///is';
-        $this->assertEquals('this/a/test/is', Tarablade::getAbsolutePath($rawPath));
+        $this->assertEquals($_SERVER['DOCUMENT_ROOT']
+            . DIRECTORY_SEPARATOR .
+            'this/a/test/is', Tarablade::getAbsolutePath($rawPath));
     }
 
     /** @test */
@@ -79,27 +81,21 @@ class TarabladeTest extends TestCase
     }
 
     /** @test */
-    public function tarablade_can_successfully_create_a_folder()
-    {
-        Tarablade::createFolder(__DIR__.'/../Feature/TestAssets/test_folder');
-        $this->assertDirectoryExists(__DIR__.'/../Feature/TestAssets/test_folder');
-    }
-
-    /** @test */
-    public function tarablade_can_successfully_delete_a_folder()
-    {
-        Tarablade::deleteFolder(__DIR__.'/../Feature/TestAssets/test_folder');
-        $this->assertDirectoryNotExists(__DIR__.'/../Feature/TestAssets/test_folder');
-    }
-
-    /** @test */
     public function tarablade_can_validate_assets_destination_folders()
     {
+        Tarablade::deleteFolder(Tarablade::getImagesFolderPath());
+        Tarablade::deleteFolder(Tarablade::getScriptsFolderPath());
+        Tarablade::deleteFolder(Tarablade::getStylesFolderPath());
+
         Config::set("tarablade.images_folder", "images");
         Config::set("tarablade.scripts_folder", "scripts");
         Config::set("tarablade.stylesheets_folder", "css");
 
         $this->assertNull(Tarablade::validateAssetsDestinationFolders());
+
+        Tarablade::deleteFolder(Tarablade::getImagesFolderPath());
+        Tarablade::deleteFolder(Tarablade::getScriptsFolderPath());
+        Tarablade::deleteFolder(Tarablade::getStylesFolderPath());
     }
 
     /** @test */
@@ -128,6 +124,6 @@ class TarabladeTest extends TestCase
     {
         Config::set("tarablade.template_namespace", "admin_panel");
         $this->assertNotNull(Tarablade::getTemplateNamespace());
-        $this->assertEquals("admin_panel", Tarablade::getTemplateNamespace());
+        $this->assertEquals("admin_panel", basename(Tarablade::getTemplateNamespace()));
     }
 }

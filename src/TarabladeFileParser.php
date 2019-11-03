@@ -13,19 +13,6 @@ class TarabladeFileParser
         $this->filename = $filename;
     }
 
-    public function importImagesFromAllTemplates()
-    {
-        $this->importImages($this->filename);
-
-        $html = DomParser::getHtml($this->filename);
-
-        foreach($html->find('a') as $anchorLink) {
-            if(preg_match('/^(www|https|http)/', $anchorLink->href) === 0 && $anchorLink->href != ""  && $anchorLink->href != "#") {
-                $this->importImages('/' . Tarablade::getAbsolutePath(dirname($this->filename).'/'.$anchorLink->href));
-            }
-        }
-    }
-
     public function importImages($templatePath)
     {
         $html = DomParser::getHtml($templatePath);
@@ -34,12 +21,26 @@ class TarabladeFileParser
             if (preg_match('/^(www|https|http)/', $image) === 0) {
 
                 $sourceImageDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
-                $sourceImagePath = '/'. $sourceImageDirectory . '/' . $image->src;
+                $sourceImagePath = $sourceImageDirectory . DIRECTORY_SEPARATOR . $image->src;
                 $sourceImageName = basename($sourceImagePath);
 
-                if( ! File::exists(Tarablade::getImagesFolderPath(). '/'. $sourceImageName)) {
-                    File::copy($sourceImagePath, Tarablade::getImagesFolderPath().'/'.$sourceImageName);
+                if( ! File::exists(Tarablade::getImagesFolderPath(). DIRECTORY_SEPARATOR . $sourceImageName)) {
+                    File::copy($sourceImagePath,
+                        Tarablade::getImagesFolderPath(). DIRECTORY_SEPARATOR .$sourceImageName);
                 }
+            }
+        }
+    }
+
+    public function importImagesFromAllTemplates()
+    {
+        $this->importImages($this->filename);
+
+        $html = DomParser::getHtml($this->filename);
+
+        foreach($html->find('a') as $anchorLink) {
+            if(preg_match('/^(www|https|http)/', $anchorLink->href) === 0 && $anchorLink->href != ""  && $anchorLink->href != "#") {
+                $this->importImages(realpath(Tarablade::getAbsolutePath(dirname($this->filename).'/'.$anchorLink->href)));
             }
         }
     }

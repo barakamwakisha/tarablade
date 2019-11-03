@@ -46,12 +46,12 @@ class ImportCommand extends Command
 
             $this->info('Starting template import...');
 
-//            Tarablade::validateAssetsDestinationFolders();
+            Tarablade::validateAssetsDestinationFolders();
             Tarablade::createAssetsDestinationFolders();
 
             $this->info('Importing images...');
 
-            $parser = new TarabladeFileParser('/' . Tarablade::getAbsolutePath($path).'/index.html');
+            $parser = new TarabladeFileParser(Tarablade::getAbsolutePath($path).'/index.html');
             $parser->importImagesFromAllTemplates();
 
         } catch (\Exception $exception) {
