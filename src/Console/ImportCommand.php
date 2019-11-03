@@ -49,10 +49,9 @@ class ImportCommand extends Command
             Tarablade::validateAssetsDestinationFolders();
             Tarablade::createAssetsDestinationFolders();
 
-            $this->info('Importing images...');
-
             $parser = new TarabladeFileParser(Tarablade::getAbsolutePath($path).'/index.html');
-            $parser->importImagesFromAllTemplates();
+            $this->info('Importing assets from templates...');
+            $parser->importAssetsFromAllTemplates();
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
         }
