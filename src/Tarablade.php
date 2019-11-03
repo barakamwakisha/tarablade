@@ -19,38 +19,41 @@ class Tarablade
     public static function getImagesFolderPath()
     {
         return self::getAbsolutePath(
-            self::getTemplateNamespace() . DIRECTORY_SEPARATOR . config('tarablade.images_folder')
+            self::getTemplateNamespace().DIRECTORY_SEPARATOR.config('tarablade.images_folder')
         );
     }
 
     public static function getStylesFolderPath()
     {
         return self::getAbsolutePath(
-            self::getTemplateNamespace() . DIRECTORY_SEPARATOR . config('tarablade.stylesheets_folder')
+            self::getTemplateNamespace().DIRECTORY_SEPARATOR.config('tarablade.stylesheets_folder')
         );
     }
 
     public static function getScriptsFolderPath()
     {
         return self::getAbsolutePath(
-            self::getTemplateNamespace() . DIRECTORY_SEPARATOR . config('tarablade.scripts_folder')
+            self::getTemplateNamespace().DIRECTORY_SEPARATOR.config('tarablade.scripts_folder')
         );
     }
 
     public static function getAbsolutePath($path)
     {
-        $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
-        $absolutes = array();
+        $absolutes = [];
         foreach ($parts as $part) {
-            if ('.' == $part) continue;
+            if ('.' == $part) {
+                continue;
+            }
             if ('..' == $part) {
                 array_pop($absolutes);
             } else {
                 $absolutes[] = $part;
             }
         }
-        return $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes);
+
+        return $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
     public static function validateFileExists($filepath)
@@ -74,9 +77,9 @@ class Tarablade
     public static function validateTemplateNamespace()
     {
         $namespacePath = self::getAbsolutePath(public_path(self::getTemplateNamespace()));
-        if(File::isDirectory($namespacePath) || File::exists($namespacePath)) {
+        if (File::isDirectory($namespacePath) || File::exists($namespacePath)) {
             throw new TemplateNamespaceAlreadyExistsException(
-              'The template under the namespace ' . self::getTemplateNamespace() . ' has already been imported. Please change the template namespace.'
+              'The template under the namespace '.self::getTemplateNamespace().' has already been imported. Please change the template namespace.'
             );
         }
     }
@@ -92,7 +95,7 @@ class Tarablade
     {
         if (File::isDirectory(self::getImagesFolderPath())) {
             throw new FolderAlreadyExistsException(
-                'A folder with the name ' . config('tarablade.images_folder') . ' already exists in the ' .
+                'A folder with the name '.config('tarablade.images_folder').' already exists in the '.
                 'public folder. Please rename it or change the images_folder name in the config file.'
             );
         }
@@ -102,7 +105,7 @@ class Tarablade
     {
         if (File::exists(self::getStylesFolderPath())) {
             throw new FolderAlreadyExistsException(
-                'A folder with the name ' . config('tarablade.stylesheets_folder') . ' already exists in the ' .
+                'A folder with the name '.config('tarablade.stylesheets_folder').' already exists in the '.
                 'public folder. Please rename it or change the stylesheets_folder name in the config file.'
             );
         }
@@ -112,7 +115,7 @@ class Tarablade
     {
         if (File::exists(self::getScriptsFolderPath())) {
             throw new FolderAlreadyExistsException(
-                'A folder with the name ' . config('tarablade.scripts_folder') . ' already exists in the ' .
+                'A folder with the name '.config('tarablade.scripts_folder').' already exists in the '.
                 'public folder. Please rename it or change the scripts_folder name in the config file.'
             );
         }
@@ -129,7 +132,7 @@ class Tarablade
     {
         if (!File::isDirectory(self::getImagesFolderPath())) {
             mkdir($_SERVER['DOCUMENT_ROOT']
-                . DIRECTORY_SEPARATOR .
+                .DIRECTORY_SEPARATOR.
                 self::getImagesFolderPath(), 0777, true);
         }
     }
@@ -138,7 +141,7 @@ class Tarablade
     {
         if (!File::isDirectory(self::getStylesFolderPath())) {
             mkdir($_SERVER['DOCUMENT_ROOT']
-                . DIRECTORY_SEPARATOR .
+                .DIRECTORY_SEPARATOR.
                 self::getStylesFolderPath(), 0777, true);
         }
     }
@@ -147,7 +150,7 @@ class Tarablade
     {
         if (!File::isDirectory(self::getScriptsFolderPath())) {
             mkdir($_SERVER['DOCUMENT_ROOT']
-                . DIRECTORY_SEPARATOR .
+                .DIRECTORY_SEPARATOR.
                 self::getScriptsFolderPath(), 0777, true);
         }
     }
@@ -167,10 +170,9 @@ class Tarablade
                 continue;
             }
 
-            if (!self::deleteFolder($dir . DIRECTORY_SEPARATOR . $item)) {
+            if (!self::deleteFolder($dir.DIRECTORY_SEPARATOR.$item)) {
                 return false;
             }
-
         }
 
         return rmdir($dir);

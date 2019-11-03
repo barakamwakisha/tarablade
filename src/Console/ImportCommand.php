@@ -53,7 +53,6 @@ class ImportCommand extends Command
 
             $parser = new TarabladeFileParser(Tarablade::getAbsolutePath($path).'/index.html');
             $parser->importImagesFromAllTemplates();
-
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
         }
