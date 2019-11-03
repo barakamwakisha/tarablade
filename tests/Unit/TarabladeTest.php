@@ -3,23 +3,19 @@
 namespace Mwakisha\Tarablade\Tests\Unit;
 
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
-use Mwakisha\Tarablade\Exceptions\FolderAlreadyExistsException;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Tarablade;
-use mysql_xdevapi\Exception;
 use Orchestra\Testbench\TestCase;
 
 class TarabladeTest extends TestCase
 {
-
     /** @test */
     public function tarablade_can_get_absolute_path()
     {
         $rawPath = 'this/is/../a/./test/.///is';
         $this->assertEquals($_SERVER['DOCUMENT_ROOT']
-            . DIRECTORY_SEPARATOR .
+            .DIRECTORY_SEPARATOR.
             'this/a/test/is', Tarablade::getAbsolutePath($rawPath));
     }
 
@@ -32,8 +28,8 @@ class TarabladeTest extends TestCase
     /** @test */
     public function tarablade_returns_images_folder_path_in_config_file()
     {
-        Config::set("tarablade.images_folder", "images");
-        $this->assertEquals("images", basename(Tarablade::getImagesFolderPath()));
+        Config::set('tarablade.images_folder', 'images');
+        $this->assertEquals('images', basename(Tarablade::getImagesFolderPath()));
     }
 
     /** @test */
@@ -45,8 +41,8 @@ class TarabladeTest extends TestCase
     /** @test */
     public function tarablade_returns_styles_folder_path_in_config_file()
     {
-        Config::set("tarablade.stylesheets_folder", "css");
-        $this->assertEquals("css", basename(Tarablade::getStylesFolderPath()));
+        Config::set('tarablade.stylesheets_folder', 'css');
+        $this->assertEquals('css', basename(Tarablade::getStylesFolderPath()));
     }
 
     /** @test */
@@ -58,8 +54,8 @@ class TarabladeTest extends TestCase
     /** @test */
     public function tarablade_returns_scripts_folder_path_in_config_file()
     {
-        Config::set("tarablade.scripts_folder", "scripts");
-        $this->assertEquals("scripts", basename(Tarablade::getScriptsFolderPath()));
+        Config::set('tarablade.scripts_folder', 'scripts');
+        $this->assertEquals('scripts', basename(Tarablade::getScriptsFolderPath()));
     }
 
     /** @test */
@@ -87,9 +83,9 @@ class TarabladeTest extends TestCase
         Tarablade::deleteFolder(Tarablade::getScriptsFolderPath());
         Tarablade::deleteFolder(Tarablade::getStylesFolderPath());
 
-        Config::set("tarablade.images_folder", "images");
-        Config::set("tarablade.scripts_folder", "scripts");
-        Config::set("tarablade.stylesheets_folder", "css");
+        Config::set('tarablade.images_folder', 'images');
+        Config::set('tarablade.scripts_folder', 'scripts');
+        Config::set('tarablade.stylesheets_folder', 'css');
 
         $this->assertNull(Tarablade::validateAssetsDestinationFolders());
 
@@ -105,9 +101,9 @@ class TarabladeTest extends TestCase
         Tarablade::deleteFolder(Tarablade::getScriptsFolderPath());
         Tarablade::deleteFolder(Tarablade::getStylesFolderPath());
 
-        Config::set("tarablade.images_folder", "images");
-        Config::set("tarablade.scripts_folder", "scripts");
-        Config::set("tarablade.stylesheets_folder", "css");
+        Config::set('tarablade.images_folder', 'images');
+        Config::set('tarablade.scripts_folder', 'scripts');
+        Config::set('tarablade.stylesheets_folder', 'css');
 
         $this->assertNull(Tarablade::createAssetsDestinationFolders());
         $this->assertNull(Tarablade::validateDirectoryExists(Tarablade::getImagesFolderPath()));
@@ -122,8 +118,8 @@ class TarabladeTest extends TestCase
     /** @test */
     public function tarablade_can_get_template_namespace()
     {
-        Config::set("tarablade.template_namespace", "admin_panel");
+        Config::set('tarablade.template_namespace', 'admin_panel');
         $this->assertNotNull(Tarablade::getTemplateNamespace());
-        $this->assertEquals("admin_panel", basename(Tarablade::getTemplateNamespace()));
+        $this->assertEquals('admin_panel', basename(Tarablade::getTemplateNamespace()));
     }
 }

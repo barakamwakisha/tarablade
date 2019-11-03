@@ -5,5 +5,5 @@ return [
     'stylesheets_folder' => 'styles',
     'scripts_folder'     => 'js',
 
-    'template_namespace' => 'landing_page'
+    'template_namespace' => 'landing_page',
 ];

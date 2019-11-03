@@ -3,7 +3,6 @@
 namespace Mwakisha\Tarablade;
 
 use HungCP\PhpSimpleHtmlDom\HtmlDomParser;
-use Illuminate\Support\Facades\File;
 
 class DomParser
 {
