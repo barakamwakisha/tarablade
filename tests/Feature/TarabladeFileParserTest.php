@@ -26,6 +26,7 @@ class TarabladeFileParserTest extends TestCase
 
         $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
         $this->assertFileExists(Tarablade::getTemplateNamespace('img/logo.png'));
+        $this->assertFileExists(Tarablade::getTemplateNamespace('img/favicon.ico'));
     }
 
     /** @test */
@@ -57,6 +58,7 @@ class TarabladeFileParserTest extends TestCase
 
         $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
         $this->assertFileExists(Tarablade::getTemplateNamespace('img/c-logo.png'));
+        $this->assertFileExists(Tarablade::getTemplateNamespace('img/favicon.ico'));
         $this->assertFileExists(Tarablade::getTemplateNamespace('css/sassy.css'));
         $this->assertFileExists(Tarablade::getTemplateNamespace('js/custom.js'));
     }

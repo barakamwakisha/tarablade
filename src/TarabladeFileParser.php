@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\File;
 class TarabladeFileParser
 {
     // TODO: Font import
-    // TODO: Favicon import
 
     protected $filename;
 
@@ -24,6 +23,23 @@ class TarabladeFileParser
             if (preg_match('/^(www|https|http)/', $image->src) === 0) {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
+                $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
+
+                if (!File::exists(Tarablade::getTemplateNamespace($sourceImageDirectory))
+                    && File::exists($sourceImagePath)) {
+                    Tarablade::copy($sourceImagePath,
+                        Tarablade::getTemplateNamespace($sourceImageDirectory));
+                }
+            }
+        }
+
+        foreach($html->find('link') as $favicon) {
+            if($favicon->href
+                && preg_match('/^(www|https|http)/', $favicon->href) === 0
+                && $favicon->rel == "shortcut icon") {
+
+                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$favicon->href;
                 $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
 
                 if (!File::exists(Tarablade::getTemplateNamespace($sourceImageDirectory))
