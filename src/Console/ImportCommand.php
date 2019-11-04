@@ -46,9 +46,6 @@ class ImportCommand extends Command
 
             $this->info('Starting template import...');
 
-            Tarablade::validateAssetsDestinationFolders();
-            Tarablade::createAssetsDestinationFolders();
-
             $parser = new TarabladeFileParser(Tarablade::getAbsolutePath($path).'/index.html');
             $this->info('Importing assets from templates...');
             $parser->importAssetsFromAllTemplates();

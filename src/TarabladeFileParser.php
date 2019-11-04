@@ -6,9 +6,8 @@ use Illuminate\Support\Facades\File;
 
 class TarabladeFileParser
 {
-
-    // TODO: Maintain folder structure when copying assets
-    // TODO: Write tests for added code
+    // TODO: Font import
+    // TODO: Favicon import
 
     protected $filename;
 
@@ -17,26 +16,27 @@ class TarabladeFileParser
         $this->filename = $filename;
     }
 
-    public function importImages($templatePath)
+    public static function importImages($templatePath)
     {
         $html = DomParser::getHtml($templatePath);
 
         foreach ($html->find('img') as $image) {
             if (preg_match('/^(www|https|http)/', $image->src) === 0) {
-                $sourceImageDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
-                $sourceImagePath = $sourceImageDirectory.DIRECTORY_SEPARATOR.$image->src;
-                $sourceImageName = basename($sourceImagePath);
 
-                if (!File::exists(Tarablade::getImagesFolderPath().DIRECTORY_SEPARATOR.$sourceImageName)
+                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
+                $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
+
+                if (!File::exists(Tarablade::getTemplateNamespace($sourceImageDirectory))
                     && File::exists($sourceImagePath)) {
-                    File::copy($sourceImagePath,
-                        Tarablade::getImagesFolderPath().DIRECTORY_SEPARATOR.$sourceImageName);
+                    Tarablade::copy($sourceImagePath,
+                        Tarablade::getTemplateNamespace($sourceImageDirectory));
                 }
             }
         }
     }
 
-    public function importStyles($templatePath)
+    public static function importStyles($templatePath)
     {
         $html = DomParser::getHtml($templatePath);
 
@@ -44,33 +44,33 @@ class TarabladeFileParser
             if($style->href
                 && preg_match('/^(www|https|http)/', $style->href) === 0
                 && $style->rel == "stylesheet") {
-                $sourceStyleDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
-                $sourceStylePath = $sourceStyleDirectory.DIRECTORY_SEPARATOR.$style->href;
-                $sourceStyleName = basename($sourceStylePath);
+                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceStylePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$style->href;
+                $sourceStyleDirectory = explode($sourceTemplateDirectory, $sourceStylePath)[1];
 
-                if (!File::exists(Tarablade::getStylesFolderPath().DIRECTORY_SEPARATOR.$sourceStyleName)
+                if (!File::exists(Tarablade::getTemplateNamespace($sourceStyleDirectory))
                     && File::exists($sourceStylePath)) {
-                    File::copy($sourceStylePath,
-                        Tarablade::getStylesFolderPath().DIRECTORY_SEPARATOR.$sourceStyleName);
+                    Tarablade::copy($sourceStylePath,
+                        Tarablade::getTemplateNamespace($sourceStyleDirectory));
                 }
             }
         }
     }
 
-    public function importScripts($templatePath)
+    public static function importScripts($templatePath)
     {
         $html = DomParser::getHtml($templatePath);
 
         foreach ($html->find('script') as $script) {
             if(preg_match('/^(www|https|http)/', $script->src) === 0 && $script->src) {
-                $sourceScriptDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
-                $sourceScriptPath = $sourceScriptDirectory.DIRECTORY_SEPARATOR.$script->src;
-                $sourceScriptName = basename($sourceScriptPath);
+                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceScriptPath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$script->src;
+                $sourceScriptDirectory = explode($sourceTemplateDirectory, $sourceScriptPath)[1];
 
-                if (!File::exists(Tarablade::getScriptsFolderPath().DIRECTORY_SEPARATOR.$sourceScriptName)
+                if (!File::exists(Tarablade::getTemplateNamespace($sourceScriptDirectory))
                     && File::exists($sourceScriptPath)) {
-                    File::copy($sourceScriptPath,
-                        Tarablade::getScriptsFolderPath().DIRECTORY_SEPARATOR.$sourceScriptName);
+                    Tarablade::copy($sourceScriptPath,
+                        Tarablade::getTemplateNamespace($sourceScriptDirectory));
                 }
             }
         }
@@ -78,9 +78,9 @@ class TarabladeFileParser
 
     public function importAssetsFromAllTemplates()
     {
-        $this->importImages($this->filename);
-        $this->importStyles($this->filename);
-        $this->importScripts($this->filename);
+        self::importImages($this->filename);
+        self::importStyles($this->filename);
+        self::importScripts($this->filename);
 
         $html = DomParser::getHtml($this->filename);
 
@@ -93,34 +93,12 @@ class TarabladeFileParser
                     .DIRECTORY_SEPARATOR.
                     $anchorLink->href));
 
-                $this->importImages($templatePath);
-                $this->importStyles($templatePath);
-                $this->importScripts($templatePath);
+                if($templatePath) {
+                    self::importImages($templatePath);
+                    self::importStyles($templatePath);
+                    self::importScripts($templatePath);
+                }
             }
         }
-    }
-
-    public function getExternalResources()
-    {
-        $resources = [];
-        $html = DomParser::getHtml($this->filename);
-        // Find all <a> tags
-        foreach ($html->find('a') as $element) {
-            $resources[] = $element->href;
-        }
-        // Find all <img> tags
-        foreach ($html->find('img') as $element) {
-            $resources[] = $element->src;
-        }
-        // Find all <link> tags
-        foreach ($html->find('link') as $element) {
-            $resources[] = $element->href;
-        }
-        // Find all <script> tags
-        foreach ($html->find('script') as $element) {
-            $resources[] = $element->src;
-        }
-
-        return $resources;
     }
 }

@@ -8,33 +8,14 @@ use Mwakisha\Tarablade\Exceptions\FolderAlreadyExistsException;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateNamespaceAlreadyExistsException;
+use mysql_xdevapi\Exception;
 
 class Tarablade
 {
-    public static function getTemplateNamespace()
+    public static function getTemplateNamespace($path = '')
     {
-        return self::getAbsolutePath(public_path(config('tarablade.template_namespace')));
-    }
-
-    public static function getImagesFolderPath()
-    {
-        return self::getAbsolutePath(
-            self::getTemplateNamespace().DIRECTORY_SEPARATOR.config('tarablade.images_folder')
-        );
-    }
-
-    public static function getStylesFolderPath()
-    {
-        return self::getAbsolutePath(
-            self::getTemplateNamespace().DIRECTORY_SEPARATOR.config('tarablade.stylesheets_folder')
-        );
-    }
-
-    public static function getScriptsFolderPath()
-    {
-        return self::getAbsolutePath(
-            self::getTemplateNamespace().DIRECTORY_SEPARATOR.config('tarablade.scripts_folder')
-        );
+        return self::getAbsolutePath(public_path(config('tarablade.template_namespace')))
+                . ($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 
     public static function getAbsolutePath($path)
@@ -76,82 +57,25 @@ class Tarablade
 
     public static function validateTemplateNamespace()
     {
-        $namespacePath = self::getAbsolutePath(public_path(self::getTemplateNamespace()));
-        if (File::isDirectory($namespacePath) || File::exists($namespacePath)) {
+        $namespacePath = self::getTemplateNamespace();
+        if (File::isDirectory($namespacePath)) {
             throw new TemplateNamespaceAlreadyExistsException(
               'The template under the namespace '.self::getTemplateNamespace().' has already been imported. Please change the template namespace.'
             );
         }
     }
 
-    public static function validateAssetsDestinationFolders()
+    public static function copy($source, $target)
     {
-        self::validateImagesDestinationFolder();
-        self::validateStylesDestinationFolder();
-        self::validateScriptsDestinationFolder();
-    }
+        $path = pathinfo($target);
+        if(!file_exists($path['dirname'])) {
+            mkdir($path['dirname'], 0777, true);
+        }
 
-    public static function validateImagesDestinationFolder()
-    {
-        if (File::isDirectory(self::getImagesFolderPath())) {
-            throw new FolderAlreadyExistsException(
-                'A folder with the name '.config('tarablade.images_folder').' already exists in the '.
-                'public folder. Please rename it or change the images_folder name in the config file.'
+        if(!copy($source, $target)) {
+            throw new Exception(
+                "Could not copy a file to the destination folder"
             );
-        }
-    }
-
-    public static function validateStylesDestinationFolder()
-    {
-        if (File::exists(self::getStylesFolderPath())) {
-            throw new FolderAlreadyExistsException(
-                'A folder with the name '.config('tarablade.stylesheets_folder').' already exists in the '.
-                'public folder. Please rename it or change the stylesheets_folder name in the config file.'
-            );
-        }
-    }
-
-    public static function validateScriptsDestinationFolder()
-    {
-        if (File::exists(self::getScriptsFolderPath())) {
-            throw new FolderAlreadyExistsException(
-                'A folder with the name '.config('tarablade.scripts_folder').' already exists in the '.
-                'public folder. Please rename it or change the scripts_folder name in the config file.'
-            );
-        }
-    }
-
-    public static function createAssetsDestinationFolders()
-    {
-        self::createImagesDestinationFolder();
-        self::createStylesDestinationFolder();
-        self::createScriptsDestinationFolder();
-    }
-
-    public static function createImagesDestinationFolder()
-    {
-        if (!File::isDirectory(self::getImagesFolderPath())) {
-            mkdir($_SERVER['DOCUMENT_ROOT']
-                .DIRECTORY_SEPARATOR.
-                self::getImagesFolderPath(), 0777, true);
-        }
-    }
-
-    public static function createStylesDestinationFolder()
-    {
-        if (!File::isDirectory(self::getStylesFolderPath())) {
-            mkdir($_SERVER['DOCUMENT_ROOT']
-                .DIRECTORY_SEPARATOR.
-                self::getStylesFolderPath(), 0777, true);
-        }
-    }
-
-    public static function createScriptsDestinationFolder()
-    {
-        if (!File::isDirectory(self::getScriptsFolderPath())) {
-            mkdir($_SERVER['DOCUMENT_ROOT']
-                .DIRECTORY_SEPARATOR.
-                self::getScriptsFolderPath(), 0777, true);
         }
     }
 
