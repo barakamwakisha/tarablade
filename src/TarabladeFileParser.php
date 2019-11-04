@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\File;
 
 class TarabladeFileParser
 {
-    // TODO: Font import
-
     protected $filename;
 
     public function __construct($filename)
@@ -20,7 +18,7 @@ class TarabladeFileParser
         $html = DomParser::getHtml($templatePath);
 
         foreach ($html->find('img') as $image) {
-            if (preg_match('/^(www|https|http)/', $image->src) === 0) {
+            if (!self::isRemoteUri($image->src)) {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
                 $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
@@ -35,7 +33,7 @@ class TarabladeFileParser
 
         foreach($html->find('link') as $favicon) {
             if($favicon->href
-                && preg_match('/^(www|https|http)/', $favicon->href) === 0
+                && !self::isRemoteUri($favicon->href)
                 && $favicon->rel == "shortcut icon") {
 
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
@@ -57,7 +55,7 @@ class TarabladeFileParser
 
         foreach ($html->find('link') as $style) {
             if ($style->href
-                && preg_match('/^(www|https|http)/', $style->href) === 0
+                && !self::isRemoteUri($style->href)
                 && $style->rel == 'stylesheet') {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceStylePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$style->href;
@@ -65,6 +63,8 @@ class TarabladeFileParser
 
                 if (!File::exists(Tarablade::getTemplateNamespace($sourceStyleDirectory))
                     && File::exists($sourceStylePath)) {
+
+                    self::parseCssForAssets($sourceStylePath);
                     Tarablade::copy($sourceStylePath,
                         Tarablade::getTemplateNamespace($sourceStyleDirectory));
                 }
@@ -77,7 +77,7 @@ class TarabladeFileParser
         $html = DomParser::getHtml($templatePath);
 
         foreach ($html->find('script') as $script) {
-            if (preg_match('/^(www|https|http)/', $script->src) === 0 && $script->src) {
+            if ($script->src && !self::isRemoteUri($script->src)) {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceScriptPath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$script->src;
                 $sourceScriptDirectory = explode($sourceTemplateDirectory, $sourceScriptPath)[1];
@@ -86,6 +86,33 @@ class TarabladeFileParser
                     && File::exists($sourceScriptPath)) {
                     Tarablade::copy($sourceScriptPath,
                         Tarablade::getTemplateNamespace($sourceScriptDirectory));
+                }
+            }
+        }
+    }
+
+    public static function parseCssForAssets($filePath)
+    {
+        $content = file_get_contents($filePath);
+        preg_match_all('/url\(([\s])?([\"|\'])?(.*?)([\"|\'])?([\s])?\)/i', $content,
+            $matches,
+            PREG_PATTERN_ORDER);
+
+        if ($matches) {
+            foreach($matches[3] as $match) {
+
+                if(self::isRemoteUri($match)) {
+                    continue;
+                }
+
+                $assetFilePath = strpos(basename($match), '?') ? explode('?', $match)[0] : $match;
+                $absolutePath = Tarablade::getAbsolutePath(dirname($filePath) . DIRECTORY_SEPARATOR . $assetFilePath);
+                $sourceAssetDirectory = ltrim(explode($absolutePath, $assetFilePath)[0], "\.\/\\");
+
+                if (!File::exists(Tarablade::getTemplateNamespace($sourceAssetDirectory))
+                    && File::exists($absolutePath)) {
+                    Tarablade::copy($absolutePath,
+                        Tarablade::getTemplateNamespace($sourceAssetDirectory));
                 }
             }
         }
@@ -114,5 +141,13 @@ class TarabladeFileParser
                 }
             }
         }
+    }
+
+    public static function isRemoteUri($uri)
+    {
+        if(preg_match('/^(www|https|http)/', $uri) === 0) {
+            return false;
+        }
+        return true;
     }
 }
