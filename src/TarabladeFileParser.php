@@ -117,7 +117,7 @@ class TarabladeFileParser
 
     public static function convertToBladeTemplate($filePath)
     {
-        $fhandle = fopen($filePath, "r");
+        $fhandle = fopen($filePath, 'r');
         $content = fread($fhandle, filesize($filePath));
 
         $html = DomParser::getHtml($content);
@@ -125,13 +125,13 @@ class TarabladeFileParser
             if ($image->src && !self::isRemoteUri($image->src)) {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($filePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
-                $sourceImageDirectory = ltrim(explode($sourceTemplateDirectory, $sourceImagePath)[1],"\.\/\\");
+                $sourceImageDirectory = ltrim(explode($sourceTemplateDirectory, $sourceImagePath)[1], "\.\/\\");
 
-                $image->src = "{{asset('". $sourceImageDirectory ."')}}";
+                $image->src = "{{asset('".$sourceImageDirectory."')}}";
             }
         }
 
-        foreach($html->find('img') as $image ) {
+        foreach ($html->find('img') as $image) {
             dump($image->src);
         }
     }

@@ -2,12 +2,12 @@
 
 namespace Mwakisha\Tarablade;
 
+use Exception;
 use Illuminate\Support\Facades\File;
 use League\Flysystem\Config;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateNamespaceAlreadyExistsException;
-use \Exception;
 
 class Tarablade
 {
