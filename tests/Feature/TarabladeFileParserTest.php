@@ -10,11 +10,10 @@ use Orchestra\Testbench\TestCase;
 
 class TarabladeFileParserTest extends TestCase
 {
-
     protected function tearDown(): void
     {
         Config::set('tarablade.template_namespace', 'personal_blog');
-        if(File::isDirectory(Tarablade::getTemplateNamespace())) {
+        if (File::isDirectory(Tarablade::getTemplateNamespace())) {
             File::deleteDirectory(Tarablade::getTemplateNamespace());
         }
     }

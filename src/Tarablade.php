@@ -4,7 +4,6 @@ namespace Mwakisha\Tarablade;
 
 use Illuminate\Support\Facades\File;
 use League\Flysystem\Config;
-use Mwakisha\Tarablade\Exceptions\FolderAlreadyExistsException;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateNamespaceAlreadyExistsException;
@@ -15,7 +14,7 @@ class Tarablade
     public static function getTemplateNamespace($path = '')
     {
         return self::getAbsolutePath(public_path(config('tarablade.template_namespace')))
-                . ($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
+                .($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 
     public static function getAbsolutePath($path)
@@ -68,13 +67,13 @@ class Tarablade
     public static function copy($source, $target)
     {
         $path = pathinfo($target);
-        if(!file_exists($path['dirname'])) {
+        if (!file_exists($path['dirname'])) {
             mkdir($path['dirname'], 0777, true);
         }
 
-        if(!copy($source, $target)) {
+        if (!copy($source, $target)) {
             throw new Exception(
-                "Could not copy a file to the destination folder"
+                'Could not copy a file to the destination folder'
             );
         }
     }
