@@ -7,7 +7,7 @@ use League\Flysystem\Config;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateNamespaceAlreadyExistsException;
-use mysql_xdevapi\Exception;
+use \Exception;
 
 class Tarablade
 {

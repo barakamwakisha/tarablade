@@ -18,7 +18,7 @@ class TarabladeFileParser
         $html = DomParser::getHtml($templatePath);
 
         foreach ($html->find('img') as $image) {
-            if (!self::isRemoteUri($image->src)) {
+            if ($image->src && !self::isRemoteUri($image->src)) {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
                 $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
@@ -112,6 +112,27 @@ class TarabladeFileParser
                         Tarablade::getTemplateNamespace($sourceAssetDirectory));
                 }
             }
+        }
+    }
+
+    public static function convertToBladeTemplate($filePath)
+    {
+        $fhandle = fopen($filePath, "r");
+        $content = fread($fhandle, filesize($filePath));
+
+        $html = DomParser::getHtml($content);
+        foreach ($html->find('img') as $image) {
+            if ($image->src && !self::isRemoteUri($image->src)) {
+                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($filePath));
+                $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
+                $sourceImageDirectory = ltrim(explode($sourceTemplateDirectory, $sourceImagePath)[1],"\.\/\\");
+
+                $image->src = "{{asset('". $sourceImageDirectory ."')}}";
+            }
+        }
+
+        foreach($html->find('img') as $image ) {
+            dump($image->src);
         }
     }
 

@@ -86,4 +86,10 @@ class TarabladeFileParserTest extends TestCase
         TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/font-awesome.min.css');
         $this->assertDirectoryExists(Tarablade::getTemplateNamespace('fonts'));
     }
+
+    /** @test */
+    public function tarablade_can_convert_html_files_to_blade_files()
+    {
+        TarabladeFileParser::convertToBladeTemplate(__DIR__.'/TestAssets/index.html');
+    }
 }
