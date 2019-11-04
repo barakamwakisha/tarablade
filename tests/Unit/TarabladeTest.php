@@ -12,11 +12,10 @@ use Orchestra\Testbench\TestCase;
 
 class TarabladeTest extends TestCase
 {
-
     protected function tearDown(): void
     {
         Config::set('tarablade.template_namespace', 'admin_panel');
-        if(File::isDirectory(Tarablade::getTemplateNamespace())) {
+        if (File::isDirectory(Tarablade::getTemplateNamespace())) {
             File::deleteDirectory(Tarablade::getTemplateNamespace());
         }
     }
@@ -39,7 +38,7 @@ class TarabladeTest extends TestCase
     }
 
     /** @test */
-    public  function tarablade_can_delete_directories()
+    public function tarablade_can_delete_directories()
     {
         Config::set('tarablade.template_namespace', 'admin_panel');
         File::makeDirectory(Tarablade::getTemplateNamespace());
@@ -50,7 +49,7 @@ class TarabladeTest extends TestCase
     }
 
     /** @test */
-    public  function tarablade_can_copy_files_and_directories()
+    public function tarablade_can_copy_files_and_directories()
     {
         Tarablade::copy(__DIR__.'/../Feature/TestAssets/index.html',
             __DIR__.'/TestAssets/index.html');
@@ -80,7 +79,7 @@ class TarabladeTest extends TestCase
     }
 
     /** @test */
-    public  function tarablade_can_validate_template_namespace()
+    public function tarablade_can_validate_template_namespace()
     {
         Config::set('tarablade.template_namespace', 'admin_panel');
         File::makeDirectory(Tarablade::getTemplateNamespace());

@@ -22,7 +22,6 @@ class TarabladeFileParser
 
         foreach ($html->find('img') as $image) {
             if (preg_match('/^(www|https|http)/', $image->src) === 0) {
-
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
                 $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
@@ -41,9 +40,9 @@ class TarabladeFileParser
         $html = DomParser::getHtml($templatePath);
 
         foreach ($html->find('link') as $style) {
-            if($style->href
+            if ($style->href
                 && preg_match('/^(www|https|http)/', $style->href) === 0
-                && $style->rel == "stylesheet") {
+                && $style->rel == 'stylesheet') {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceStylePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$style->href;
                 $sourceStyleDirectory = explode($sourceTemplateDirectory, $sourceStylePath)[1];
@@ -62,7 +61,7 @@ class TarabladeFileParser
         $html = DomParser::getHtml($templatePath);
 
         foreach ($html->find('script') as $script) {
-            if(preg_match('/^(www|https|http)/', $script->src) === 0 && $script->src) {
+            if (preg_match('/^(www|https|http)/', $script->src) === 0 && $script->src) {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceScriptPath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$script->src;
                 $sourceScriptDirectory = explode($sourceTemplateDirectory, $sourceScriptPath)[1];
@@ -88,12 +87,11 @@ class TarabladeFileParser
             if (preg_match('/^(www|https|http)/', $anchorLink->href) === 0
                 && $anchorLink->href != ''
                 && $anchorLink->href != '#') {
-
                 $templatePath = realpath(Tarablade::getAbsolutePath(dirname($this->filename)
                     .DIRECTORY_SEPARATOR.
                     $anchorLink->href));
 
-                if($templatePath) {
+                if ($templatePath) {
                     self::importImages($templatePath);
                     self::importStyles($templatePath);
                     self::importScripts($templatePath);
