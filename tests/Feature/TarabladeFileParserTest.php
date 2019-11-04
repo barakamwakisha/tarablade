@@ -69,9 +69,9 @@ class TarabladeFileParserTest extends TestCase
     public function tarablade_can_check_whether_uri_is_remote_or_not()
     {
         $this->assertFalse(TarabladeFileParser::isRemoteUri(__DIR__.'/TestAssets/index.html'));
-        $this->assertTrue(TarabladeFileParser::isRemoteUri("www.google.com"));
-        $this->assertTrue(TarabladeFileParser::isRemoteUri("https://stackoverflow.com/"));
-        $this->assertTrue(TarabladeFileParser::isRemoteUri("http://ztwmbfcnhdkrsxlv.neverssl.com/online"));
+        $this->assertTrue(TarabladeFileParser::isRemoteUri('www.google.com'));
+        $this->assertTrue(TarabladeFileParser::isRemoteUri('https://stackoverflow.com/'));
+        $this->assertTrue(TarabladeFileParser::isRemoteUri('http://ztwmbfcnhdkrsxlv.neverssl.com/online'));
     }
 
     /** @test */
