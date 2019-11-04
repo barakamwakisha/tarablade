@@ -31,11 +31,10 @@ class TarabladeFileParser
             }
         }
 
-        foreach($html->find('link') as $favicon) {
-            if($favicon->href
+        foreach ($html->find('link') as $favicon) {
+            if ($favicon->href
                 && !self::isRemoteUri($favicon->href)
-                && $favicon->rel == "shortcut icon") {
-
+                && $favicon->rel == 'shortcut icon') {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$favicon->href;
                 $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
@@ -63,7 +62,6 @@ class TarabladeFileParser
 
                 if (!File::exists(Tarablade::getTemplateNamespace($sourceStyleDirectory))
                     && File::exists($sourceStylePath)) {
-
                     self::parseCssForAssets($sourceStylePath);
                     Tarablade::copy($sourceStylePath,
                         Tarablade::getTemplateNamespace($sourceStyleDirectory));
@@ -99,14 +97,13 @@ class TarabladeFileParser
             PREG_PATTERN_ORDER);
 
         if ($matches) {
-            foreach($matches[3] as $match) {
-
-                if(self::isRemoteUri($match)) {
+            foreach ($matches[3] as $match) {
+                if (self::isRemoteUri($match)) {
                     continue;
                 }
 
                 $assetFilePath = strpos(basename($match), '?') ? explode('?', $match)[0] : $match;
-                $absolutePath = Tarablade::getAbsolutePath(dirname($filePath) . DIRECTORY_SEPARATOR . $assetFilePath);
+                $absolutePath = Tarablade::getAbsolutePath(dirname($filePath).DIRECTORY_SEPARATOR.$assetFilePath);
                 $sourceAssetDirectory = ltrim(explode($absolutePath, $assetFilePath)[0], "\.\/\\");
 
                 if (!File::exists(Tarablade::getTemplateNamespace($sourceAssetDirectory))
@@ -145,9 +142,10 @@ class TarabladeFileParser
 
     public static function isRemoteUri($uri)
     {
-        if(preg_match('/^(www|https|http)/', $uri) === 0) {
+        if (preg_match('/^(www|https|http)/', $uri) === 0) {
             return false;
         }
+
         return true;
     }
 }
