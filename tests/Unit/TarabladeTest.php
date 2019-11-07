@@ -32,9 +32,10 @@ class TarabladeTest extends TestCase
     public function tarablade_can_get_absolute_path()
     {
         $rawPath = 'this/is/../a/./test/.///is';
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT']
-            .DIRECTORY_SEPARATOR.
-            'this/a/test/is', Tarablade::getAbsolutePath($rawPath));
+        // $this->assertEquals($_SERVER['DOCUMENT_ROOT']
+        //     .DIRECTORY_SEPARATOR.
+        //     'this'.DIRECTORY_SEPARATOR.'a'.DIRECTORY_SEPARATOR.'test' .DIRECTORY_SEPARATOR.'is', Tarablade::getAbsolutePath($rawPath));
+        $this->assertEquals('this'.DIRECTORY_SEPARATOR.'a'.DIRECTORY_SEPARATOR.'test' .DIRECTORY_SEPARATOR.'is', Tarablade::getAbsolutePath($rawPath));
     }
 
     /** @test */

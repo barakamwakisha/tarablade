@@ -4,7 +4,6 @@ namespace Mwakisha\Tarablade;
 
 use Exception;
 use Illuminate\Support\Facades\File;
-use League\Flysystem\Config;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateNamespaceAlreadyExistsException;
@@ -33,7 +32,8 @@ class Tarablade
             }
         }
 
-        return $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $absolutes);
+        // return $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $absolutes);
+        return implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
     public static function validateFileExists($filepath)

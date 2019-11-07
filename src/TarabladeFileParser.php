@@ -132,7 +132,7 @@ class TarabladeFileParser
         }
 
         foreach ($html->find('img') as $image) {
-            dump($image->src);
+            // dump($image->src);
         }
     }
 

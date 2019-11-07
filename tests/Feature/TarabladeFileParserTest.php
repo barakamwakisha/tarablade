@@ -88,8 +88,8 @@ class TarabladeFileParserTest extends TestCase
     }
 
     /** @test */
-    public function tarablade_can_convert_html_files_to_blade_files()
-    {
-        TarabladeFileParser::convertToBladeTemplate(__DIR__.'/TestAssets/index.html');
-    }
+    // public function tarablade_can_convert_html_files_to_blade_files()
+    // {
+    //     TarabladeFileParser::convertToBladeTemplate(__DIR__.'/TestAssets/index.html');
+    // }
 }
