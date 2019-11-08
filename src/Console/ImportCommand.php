@@ -48,5 +48,6 @@ class ImportCommand extends Command
             $this->error($exception->getMessage());
         }
     }
+
     // @codeCoverageIgnoreEnd
 }

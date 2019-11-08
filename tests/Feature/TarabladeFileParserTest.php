@@ -17,7 +17,7 @@ class TarabladeFileParserTest extends TestCase
             File::deleteDirectory(Tarablade::getPublicPath());
         }
 
-        if(File::isDirectory(Tarablade::getViewsResourcePath())) {
+        if (File::isDirectory(Tarablade::getViewsResourcePath())) {
             File::deleteDirectory(Tarablade::getViewsResourcePath());
         }
     }
@@ -96,11 +96,11 @@ class TarabladeFileParserTest extends TestCase
     {
         Config::set('tarablade.template_namespace', 'personal_blog');
         $file = __DIR__.'/TestAssets/index.html';
-        $routesFile = base_path("routes".DIRECTORY_SEPARATOR."web.php");
+        $routesFile = base_path('routes'.DIRECTORY_SEPARATOR.'web.php');
 
         $this->assertNotNull(TarabladeFileParser::createRoute($file));
-        $this->assertEquals("personal_blog.index", TarabladeFileParser::createRoute($file));
-        $this->assertTrue(strpos(file_get_contents($routesFile), "->name('personal_blog.index');") !== FALSE);
+        $this->assertEquals('personal_blog.index', TarabladeFileParser::createRoute($file));
+        $this->assertTrue(strpos(file_get_contents($routesFile), "->name('personal_blog.index');") !== false);
     }
 
     /** @test */
@@ -109,7 +109,7 @@ class TarabladeFileParserTest extends TestCase
         Config::set('tarablade.template_namespace', 'personal_blog');
         TarabladeFileParser::convertToBladeTemplate(__DIR__.'/TestAssets/index.html');
 
-        $this->assertFileExists(Tarablade::getViewsResourcePath("index.blade.php"));
+        $this->assertFileExists(Tarablade::getViewsResourcePath('index.blade.php'));
     }
 
     /** @test */
@@ -117,10 +117,10 @@ class TarabladeFileParserTest extends TestCase
     {
         Config::set('tarablade.template_namespace', 'personal_blog');
         mkdir(Tarablade::getPublicPath());
-        file_put_contents(Tarablade::getPublicPath("test.html"), "this is a cool test");
-        TarabladeFileParser::replaceTextInFile(Tarablade::getPublicPath("test.html"), "cool", "great");
+        file_put_contents(Tarablade::getPublicPath('test.html'), 'this is a cool test');
+        TarabladeFileParser::replaceTextInFile(Tarablade::getPublicPath('test.html'), 'cool', 'great');
 
-        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath("test.html")), "cool") == FALSE);
-        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath("test.html")), "great") !== FALSE);
+        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath('test.html')), 'cool') == false);
+        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath('test.html')), 'great') !== false);
     }
 }
