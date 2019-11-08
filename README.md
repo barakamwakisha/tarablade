@@ -1,5 +1,5 @@
 <p align="center">
-    <img height="100" src="./docs/logo.png"
+    <img height="100" src="./docs/tarablade_logo.png"
                     alt="Tarablade Logo" title="Tarablade Logo">
 </p>
 
