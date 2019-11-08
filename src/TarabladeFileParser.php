@@ -146,7 +146,7 @@ class TarabladeFileParser
     public static function createRoute($filepath)
     {
         $filename = Str::snake(pathinfo($filepath)['filename']);
-        $routeName = Tarablade::getTemplateNamespace(). "." . $filename;
+        $routeName = ltrim(Tarablade::getTemplateNamespace(), "\.\/\\"). "." . $filename;
         $routePath = Tarablade::getTemplateNamespace(). "/" . $filename;
         $viewName = Tarablade::getTemplateNamespace().".".$filename;
         $routesFile = base_path("routes".DIRECTORY_SEPARATOR."web.php");
