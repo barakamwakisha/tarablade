@@ -83,26 +83,44 @@ class TarabladeFileParserTest extends TestCase
     {
         Config::set('tarablade.template_namespace', 'personal_blog');
 
-        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/main.css');
+        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/main.css', __DIR__.'/TestAssets/index.html');
         $this->assertDirectoryExists(Tarablade::getPublicPath('img/blog'));
         $this->assertDirectoryExists(Tarablade::getPublicPath('img/elements'));
 
-        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/font-awesome.min.css');
+        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/font-awesome.min.css', __DIR__.'/TestAssets/index.html');
         $this->assertDirectoryExists(Tarablade::getPublicPath('fonts'));
+    }
+
+    /** @test */
+    public function tarablade_can_create_a_route()
+    {
+        Config::set('tarablade.template_namespace', 'personal_blog');
+        $file = __DIR__.'/TestAssets/index.html';
+        $routesFile = base_path("routes".DIRECTORY_SEPARATOR."web.php");
+
+        $this->assertNotNull(TarabladeFileParser::createRoute($file));
+        $this->assertEquals("personal_blog.index", TarabladeFileParser::createRoute($file));
+        $this->assertTrue(strpos(file_get_contents($routesFile), "->name('personal_blog.index');") !== FALSE);
     }
 
     /** @test */
     public function tarablade_can_convert_html_files_to_blade_files()
     {
-        // TODO: Test conversion functionality
         Config::set('tarablade.template_namespace', 'personal_blog');
-        $this->assertNull(TarabladeFileParser::convertToBladeTemplate(__DIR__.'/TestAssets/index.html'));
+        TarabladeFileParser::convertToBladeTemplate(__DIR__.'/TestAssets/index.html');
+
+        $this->assertFileExists(Tarablade::getViewsResourcePath("index.blade.php"));
     }
 
     /** @test */
     public function tarablade_can_replace_text_in_file()
     {
-        // TODO: Test replacement functionality
-        $this->assertNull(TarabladeFileParser::replaceTextInFile(__DIR__.'/TestAssets/index.html', "", ""));
+        Config::set('tarablade.template_namespace', 'personal_blog');
+        mkdir(Tarablade::getPublicPath());
+        file_put_contents(Tarablade::getPublicPath("test.html"), "this is a cool test");
+        TarabladeFileParser::replaceTextInFile(Tarablade::getPublicPath("test.html"), "cool", "great");
+
+        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath("test.html")), "cool") == FALSE);
+        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath("test.html")), "great") !== FALSE);
     }
 }

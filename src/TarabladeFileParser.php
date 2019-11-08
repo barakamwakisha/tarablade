@@ -4,6 +4,7 @@ namespace Mwakisha\Tarablade;
 
 use DOMDocument;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class TarabladeFileParser
 {
@@ -40,7 +41,7 @@ class TarabladeFileParser
             if (
                 $favicon->href
                 && !self::isRemoteUri($favicon->href)
-                && $favicon->rel == 'shortcut icon'
+                && ($favicon->rel == 'shortcut icon' || $favicon->rel == "icon")
             ) {
                 $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory . DIRECTORY_SEPARATOR . $favicon->href;
@@ -77,7 +78,7 @@ class TarabladeFileParser
                     !File::exists(Tarablade::getPublicPath($sourceStyleDirectory))
                     && File::exists($sourceStylePath)
                 ) {
-                    self::parseCssForAssets($sourceStylePath);
+                    self::parseCssForAssets($sourceStylePath, $templatePath);
                     Tarablade::copy(
                         $sourceStylePath,
                         Tarablade::getPublicPath($sourceStyleDirectory)
@@ -110,7 +111,7 @@ class TarabladeFileParser
         }
     }
 
-    public static function parseCssForAssets($filePath)
+    public static function parseCssForAssets($filePath, $templatePath)
     {
         $content = file_get_contents($filePath);
         preg_match_all(
@@ -128,8 +129,7 @@ class TarabladeFileParser
 
                 $assetFilePath = strpos(basename($match), '?') ? explode('?', $match)[0] : $match;
                 $absolutePath = Tarablade::getAbsolutePath(dirname($filePath) . DIRECTORY_SEPARATOR . $assetFilePath);
-                $sourceAssetDirectory = ltrim(explode($absolutePath, $assetFilePath)[0], "\.\/\\");
-
+                $sourceAssetDirectory = ltrim(explode(Tarablade::getAbsolutePath(dirname($templatePath)), $absolutePath)[1], "\.\/\\");
                 if (
                     !File::exists(Tarablade::getPublicPath($sourceAssetDirectory))
                     && File::exists($absolutePath)
@@ -143,9 +143,37 @@ class TarabladeFileParser
         }
     }
 
+    public static function createRoute($filepath)
+    {
+        $filename = Str::snake(pathinfo($filepath)['filename']);
+        $routeName = Tarablade::getTemplateNamespace(). "." . $filename;
+        $routePath = Tarablade::getTemplateNamespace(). "/" . $filename;
+        $viewName = Tarablade::getTemplateNamespace().".".$filename;
+        $routesFile = base_path("routes".DIRECTORY_SEPARATOR."web.php");
+
+        // Orchestra testbench does not have the routes file, this makes the test pass
+        if(!File::exists($routesFile)) {
+            mkdir(base_path("routes"), 0777, true);
+            $handle = fopen($routesFile,"a+");
+            fwrite($handle,"<?php\n");
+            fclose($handle);
+        }
+
+        $routes = file_get_contents($routesFile);
+
+        if(strpos($routes, "->name('".$routeName."');") !== FALSE) {
+            return $routeName;
+        }
+        
+        $route = "Route::get('". $routePath ."', function () {return view('". $viewName ."');})->name('". $routeName ."');";
+        file_put_contents($routesFile, $route.PHP_EOL , FILE_APPEND | LOCK_EX);
+
+        return $routeName;
+    }
+
     public static function convertToBladeTemplate($filePath)
     {
-        $filename = pathinfo($filePath)['filename'] . ".blade.php";
+        $filename = Str::snake(pathinfo($filePath)['filename']) . ".blade.php";
         $outputFilepath = Tarablade::getViewsResourcePath($filename);
         if(File::exists($outputFilepath)) {
             return;
@@ -199,6 +227,25 @@ class TarabladeFileParser
                 $script->src = "{{asset('" . Tarablade::getTemplateNamespace($sourceScriptDirectory) . "')}}";
 
                 self::replaceTextInFile($outputFilepath, $oldMarkup, $script->outertext);
+            }
+        }
+
+        foreach ($html->find('a') as $anchorLink) {
+            if (
+                preg_match('/^(www|https|http)/', $anchorLink->href) === 0
+                && $anchorLink->href != ''
+                && $anchorLink->href != '#'
+            ) {
+                $templatePath = realpath(Tarablade::getAbsolutePath(dirname($filePath)
+                    . DIRECTORY_SEPARATOR .
+                    $anchorLink->href));
+
+                if ($templatePath) {
+                    $oldMarkup = $anchorLink->outertext;
+                    $anchorLink->href = "{{route('". self::createRoute(basename($anchorLink->href)) ."')}}";
+
+                    self::replaceTextInFile($outputFilepath, $oldMarkup, $anchorLink->outertext);
+                }
             }
         }
     }
