@@ -1,1 +1,1 @@
- *.* linguist-language=PHP
+tests/Feature/TestAssets/* linguist-vendored
