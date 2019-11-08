@@ -12,7 +12,19 @@ class Tarablade
 {
     public static function getTemplateNamespace($path = '')
     {
+        return self::getAbsolutePath(config('tarablade.template_namespace'))
+            . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
+    }
+
+    public static function getPublicPath($path = '')
+    {
         return self::getAbsolutePath(public_path(config('tarablade.template_namespace')))
+            . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
+    }
+
+    public static function getViewsResourcePath($path = '')
+    {
+        return self::getAbsolutePath(resource_path('views' . DIRECTORY_SEPARATOR . config('tarablade.template_namespace')))
             . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 
@@ -56,10 +68,10 @@ class Tarablade
 
     public static function validateTemplateNamespace()
     {
-        $namespacePath = self::getTemplateNamespace();
-        if (File::isDirectory($namespacePath)) {
+        $publicPath = self::getPublicPath();
+        if (File::isDirectory($publicPath)) {
             throw new TemplateNamespaceAlreadyExistsException(
-                'The template under the namespace ' . self::getTemplateNamespace() . ' has already been imported. Please change the template namespace.'
+                'The template under the namespace ' . self::getPublicPath() . ' has already been imported. Please change the template namespace.'
             );
         }
     }

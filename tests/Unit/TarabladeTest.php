@@ -15,8 +15,8 @@ class TarabladeTest extends TestCase
     protected function tearDown(): void
     {
         Config::set('tarablade.template_namespace', 'admin_panel');
-        if (File::isDirectory(Tarablade::getTemplateNamespace())) {
-            File::deleteDirectory(Tarablade::getTemplateNamespace());
+        if (File::isDirectory(Tarablade::getPublicPath())) {
+            File::deleteDirectory(Tarablade::getPublicPath());
         }
     }
 
@@ -24,9 +24,17 @@ class TarabladeTest extends TestCase
     public function tarablade_can_get_template_namespace()
     {
         Config::set('tarablade.template_namespace', 'admin_panel');
-        $this->assertNotNull(Tarablade::getTemplateNamespace());
-        $this->assertEquals('admin_panel', basename(Tarablade::getTemplateNamespace()));
+        $this->assertNotNull(Tarablade::getPublicPath());
+        $this->assertEquals('admin_panel', basename(Tarablade::getPublicPath()));
     }
+
+     /** @test */
+     public function tarablade_can_get_views_resource_path()
+     {
+         Config::set('tarablade.template_namespace', 'admin_panel');
+         $this->assertNotNull(Tarablade::getViewsResourcePath());
+         $this->assertEquals('admin_panel', basename(Tarablade::getViewsResourcePath()));
+     }
 
     /** @test */
     public function tarablade_can_get_absolute_path()
@@ -46,11 +54,11 @@ class TarabladeTest extends TestCase
     public function tarablade_can_delete_directories()
     {
         Config::set('tarablade.template_namespace', 'admin_panel');
-        File::makeDirectory(Tarablade::getTemplateNamespace());
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
+        File::makeDirectory(Tarablade::getPublicPath());
+        $this->assertDirectoryExists(Tarablade::getPublicPath());
 
-        Tarablade::deleteFolder(Tarablade::getTemplateNamespace());
-        $this->assertDirectoryNotExists(Tarablade::getTemplateNamespace());
+        Tarablade::deleteFolder(Tarablade::getPublicPath());
+        $this->assertDirectoryNotExists(Tarablade::getPublicPath());
     }
 
     /** @test */
@@ -95,14 +103,14 @@ class TarabladeTest extends TestCase
     public function tarablade_can_validate_template_namespace()
     {
         Config::set('tarablade.template_namespace', 'admin_panel');
-        File::makeDirectory(Tarablade::getTemplateNamespace());
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
+        File::makeDirectory(Tarablade::getPublicPath());
+        $this->assertDirectoryExists(Tarablade::getPublicPath());
 
         $this->expectException(TemplateNamespaceAlreadyExistsException::class);
         $this->assertNotNull(Tarablade::validateTemplateNamespace());
 
-        Tarablade::deleteFolder(Tarablade::getTemplateNamespace());
-        $this->assertDirectoryNotExists(Tarablade::getTemplateNamespace());
+        Tarablade::deleteFolder(Tarablade::getPublicPath());
+        $this->assertDirectoryNotExists(Tarablade::getPublicPath());
         $this->assertNull(Tarablade::validateTemplateNamespace());
     }
 }
