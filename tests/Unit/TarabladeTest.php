@@ -28,13 +28,13 @@ class TarabladeTest extends TestCase
         $this->assertEquals('admin_panel', basename(Tarablade::getPublicPath()));
     }
 
-     /** @test */
-     public function tarablade_can_get_views_resource_path()
-     {
-         Config::set('tarablade.template_namespace', 'admin_panel');
-         $this->assertNotNull(Tarablade::getViewsResourcePath());
-         $this->assertEquals('admin_panel', basename(Tarablade::getViewsResourcePath()));
-     }
+    /** @test */
+    public function tarablade_can_get_views_resource_path()
+    {
+        Config::set('tarablade.template_namespace', 'admin_panel');
+        $this->assertNotNull(Tarablade::getViewsResourcePath());
+        $this->assertEquals('admin_panel', basename(Tarablade::getViewsResourcePath()));
+    }
 
     /** @test */
     public function tarablade_can_get_absolute_path()
@@ -43,10 +43,10 @@ class TarabladeTest extends TestCase
 
         if (Tarablade::runningOnUnix()) {
             $this->assertEquals($_SERVER['DOCUMENT_ROOT']
-                . DIRECTORY_SEPARATOR .
-                'this' . DIRECTORY_SEPARATOR . 'a' . DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'is', Tarablade::getAbsolutePath($rawPath));
+                .DIRECTORY_SEPARATOR.
+                'this'.DIRECTORY_SEPARATOR.'a'.DIRECTORY_SEPARATOR.'test'.DIRECTORY_SEPARATOR.'is', Tarablade::getAbsolutePath($rawPath));
         } else {
-            $this->assertEquals('this' . DIRECTORY_SEPARATOR . 'a' . DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'is', Tarablade::getAbsolutePath($rawPath));
+            $this->assertEquals('this'.DIRECTORY_SEPARATOR.'a'.DIRECTORY_SEPARATOR.'test'.DIRECTORY_SEPARATOR.'is', Tarablade::getAbsolutePath($rawPath));
         }
     }
 
@@ -71,32 +71,32 @@ class TarabladeTest extends TestCase
     public function tarablade_can_copy_files_and_directories()
     {
         Tarablade::copy(
-            __DIR__ . '/../Feature/TestAssets/index.html',
-            __DIR__ . '/TestAssets/index.html'
+            __DIR__.'/../Feature/TestAssets/index.html',
+            __DIR__.'/TestAssets/index.html'
         );
 
-        $this->assertFileExists(__DIR__ . '/../Feature/TestAssets/index.html');
-        $this->assertFileExists(__DIR__ . '/TestAssets/index.html');
+        $this->assertFileExists(__DIR__.'/../Feature/TestAssets/index.html');
+        $this->assertFileExists(__DIR__.'/TestAssets/index.html');
 
-        Tarablade::deleteFolder(__DIR__ . '/TestAssets');
+        Tarablade::deleteFolder(__DIR__.'/TestAssets');
     }
 
     /** @test */
     public function tarablade_can_validate_that_a_file_exists()
     {
-        $this->assertNull(Tarablade::validateFileExists(__DIR__ . '/../Feature/TestAssets/index.html'));
+        $this->assertNull(Tarablade::validateFileExists(__DIR__.'/../Feature/TestAssets/index.html'));
 
         $this->expectException(TemplateFileNotFoundException::class);
-        $this->assertNotNull(Tarablade::validateFileExists(__DIR__ . '/../Feature/TestAssets/does-not-exist.html'));
+        $this->assertNotNull(Tarablade::validateFileExists(__DIR__.'/../Feature/TestAssets/does-not-exist.html'));
     }
 
     /** @test */
     public function tarablade_can_validate_that_a_directory_exists()
     {
-        $this->assertNull(Tarablade::validateDirectoryExists(__DIR__ . '/../Feature/TestAssets/'));
+        $this->assertNull(Tarablade::validateDirectoryExists(__DIR__.'/../Feature/TestAssets/'));
 
         $this->expectException(TemplateDirectoryNotFoundException::class);
-        $this->assertNotNull(Tarablade::validateDirectoryExists(__DIR__ . '/../Feature/NonExistent/'));
+        $this->assertNotNull(Tarablade::validateDirectoryExists(__DIR__.'/../Feature/NonExistent/'));
     }
 
     /** @test */
