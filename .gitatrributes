@@ -1,1 +1,2 @@
-tests/Feature/TestAssets/* linguist-vendored
+* linguist-vendored
+*.php linguist-vendored=false
