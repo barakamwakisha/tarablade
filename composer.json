@@ -1,0 +1,35 @@
+{
+    "name": "mwakisha/tarablade",
+    "description": "A package that quickly converts plain HTML files into Blade files and integrates them into a Laravel project,together with their accompanying assets.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Baraka Mwakisha",
+            "email": "barakamwakisha@gmail.com"
+        }
+    ],
+    "require": {
+        "caophihung94/php-simple-html-dom-parser": "^1.7"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mwakisha\\Tarablade\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mwakisha\\Tarablade\\Tests\\": "tests/"
+        }
+    },
+    "extra":  {
+        "laravel": {
+            "providers": [
+                "Mwakisha\\Tarablade\\TarabladeServiceProvider"
+            ]
+        }
+    }
+}
