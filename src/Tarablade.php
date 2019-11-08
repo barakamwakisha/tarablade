@@ -13,7 +13,7 @@ class Tarablade
     public static function getTemplateNamespace($path = '')
     {
         return self::getAbsolutePath(config('tarablade.template_namespace'))
-            . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
+            . ($path ? "/" . ltrim($path, "\.\/\\") : $path);
     }
 
     public static function getPublicPath($path = '')
