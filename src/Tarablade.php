@@ -13,19 +13,19 @@ class Tarablade
     public static function getTemplateNamespace($path = '')
     {
         return self::getAbsolutePath(config('tarablade.template_namespace'))
-            . ($path ? "/" . ltrim($path, "\.\/\\") : $path);
+            .($path ? '/'.ltrim($path, "\.\/\\") : $path);
     }
 
     public static function getPublicPath($path = '')
     {
         return self::getAbsolutePath(public_path(config('tarablade.template_namespace')))
-            . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
+            .($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 
     public static function getViewsResourcePath($path = '')
     {
-        return self::getAbsolutePath(resource_path('views' . DIRECTORY_SEPARATOR . config('tarablade.template_namespace')))
-            . ($path ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR) : $path);
+        return self::getAbsolutePath(resource_path('views'.DIRECTORY_SEPARATOR.config('tarablade.template_namespace')))
+            .($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 
     public static function getAbsolutePath($path)
@@ -43,8 +43,9 @@ class Tarablade
                 $absolutes[] = $part;
             }
         }
+
         return self::runningOnUnix() ?
-            $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $absolutes)
+            $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $absolutes)
             : implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
@@ -52,7 +53,7 @@ class Tarablade
     {
         if (!File::exists($filepath)) {
             throw new TemplateFileNotFoundException(
-                'The file ' . $filepath . ' does not exists'
+                'The file '.$filepath.' does not exists'
             );
         }
     }
@@ -61,7 +62,7 @@ class Tarablade
     {
         if (!File::isDirectory($path)) {
             throw new TemplateDirectoryNotFoundException(
-                'Directory at ' . $path . ' does not exists'
+                'Directory at '.$path.' does not exists'
             );
         }
     }
@@ -71,7 +72,7 @@ class Tarablade
         $publicPath = self::getPublicPath();
         if (File::isDirectory($publicPath)) {
             throw new TemplateNamespaceAlreadyExistsException(
-                'The template under the namespace ' . self::getPublicPath() . ' has already been imported. Please change the template namespace.'
+                'The template under the namespace '.self::getPublicPath().' has already been imported. Please change the template namespace.'
             );
         }
     }
@@ -81,6 +82,7 @@ class Tarablade
         if (DIRECTORY_SEPARATOR == '/') {
             return true;
         }
+
         return false;
     }
 
@@ -113,7 +115,7 @@ class Tarablade
                 continue;
             }
 
-            if (!self::deleteFolder($dir . DIRECTORY_SEPARATOR . $item)) {
+            if (!self::deleteFolder($dir.DIRECTORY_SEPARATOR.$item)) {
                 return false;
             }
         }
