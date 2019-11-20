@@ -1,4 +1,0 @@
-tests/Feature/TestAssets/* linguist-vendored=true
-ests/Feature/TestAssets/css/* linguist-vendored=true
-tests/Feature/TestAssets/fonts/* linguist-vendored=true
-tests/Feature/TestAssets/js/* linguist-vendored=true
