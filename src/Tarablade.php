@@ -2,19 +2,30 @@
 
 namespace Mwakisha\Tarablade;
 
+use Exception;
 use Illuminate\Support\Facades\File;
-use League\Flysystem\Config;
 use Mwakisha\Tarablade\Exceptions\TemplateDirectoryNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateFileNotFoundException;
 use Mwakisha\Tarablade\Exceptions\TemplateNamespaceAlreadyExistsException;
-use \Exception;
 
 class Tarablade
 {
     public static function getTemplateNamespace($path = '')
     {
+        return self::getAbsolutePath(config('tarablade.template_namespace'))
+            .($path ? '/'.ltrim($path, "\.\/\\") : $path);
+    }
+
+    public static function getPublicPath($path = '')
+    {
         return self::getAbsolutePath(public_path(config('tarablade.template_namespace')))
-                .($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
+            .($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
+    }
+
+    public static function getViewsResourcePath($path = '')
+    {
+        return self::getAbsolutePath(resource_path('views'.DIRECTORY_SEPARATOR.config('tarablade.template_namespace')))
+            .($path ? DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR) : $path);
     }
 
     public static function getAbsolutePath($path)
@@ -33,7 +44,9 @@ class Tarablade
             }
         }
 
-        return $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $absolutes);
+        return self::runningOnUnix() ?
+            $_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $absolutes)
+            : implode(DIRECTORY_SEPARATOR, $absolutes);
     }
 
     public static function validateFileExists($filepath)
@@ -56,12 +69,21 @@ class Tarablade
 
     public static function validateTemplateNamespace()
     {
-        $namespacePath = self::getTemplateNamespace();
-        if (File::isDirectory($namespacePath)) {
+        $publicPath = self::getPublicPath();
+        if (File::isDirectory($publicPath)) {
             throw new TemplateNamespaceAlreadyExistsException(
-              'The template under the namespace '.self::getTemplateNamespace().' has already been imported. Please change the template namespace.'
+                'The template under the namespace '.self::getPublicPath().' has already been imported. Please change the template namespace.'
             );
         }
+    }
+
+    public static function runningOnUnix()
+    {
+        if (DIRECTORY_SEPARATOR == '/') {
+            return true;
+        }
+
+        return false;
     }
 
     public static function copy($source, $target)

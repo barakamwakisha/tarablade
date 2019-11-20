@@ -13,8 +13,12 @@ class TarabladeFileParserTest extends TestCase
     protected function tearDown(): void
     {
         Config::set('tarablade.template_namespace', 'personal_blog');
-        if (File::isDirectory(Tarablade::getTemplateNamespace())) {
-            File::deleteDirectory(Tarablade::getTemplateNamespace());
+        if (File::isDirectory(Tarablade::getPublicPath())) {
+            File::deleteDirectory(Tarablade::getPublicPath());
+        }
+
+        if (File::isDirectory(Tarablade::getViewsResourcePath())) {
+            File::deleteDirectory(Tarablade::getViewsResourcePath());
         }
     }
 
@@ -24,9 +28,9 @@ class TarabladeFileParserTest extends TestCase
         Config::set('tarablade.template_namespace', 'personal_blog');
         TarabladeFileParser::importImages(__DIR__.'/TestAssets/index.html');
 
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
-        $this->assertFileExists(Tarablade::getTemplateNamespace('img/logo.png'));
-        $this->assertFileExists(Tarablade::getTemplateNamespace('img/favicon.ico'));
+        $this->assertDirectoryExists(Tarablade::getPublicPath());
+        $this->assertFileExists(Tarablade::getPublicPath('img/logo.png'));
+        $this->assertFileExists(Tarablade::getPublicPath('img/favicon.ico'));
     }
 
     /** @test */
@@ -35,9 +39,9 @@ class TarabladeFileParserTest extends TestCase
         Config::set('tarablade.template_namespace', 'personal_blog');
         TarabladeFileParser::importStyles(__DIR__.'/TestAssets/index.html');
 
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
-        $this->assertFileExists(Tarablade::getTemplateNamespace('css/main.css'));
-        $this->assertFileExists(Tarablade::getTemplateNamespace('css/font-awesome.min.css'));
+        $this->assertDirectoryExists(Tarablade::getPublicPath());
+        $this->assertFileExists(Tarablade::getPublicPath('css/main.css'));
+        $this->assertFileExists(Tarablade::getPublicPath('css/font-awesome.min.css'));
     }
 
     /** @test */
@@ -46,8 +50,8 @@ class TarabladeFileParserTest extends TestCase
         Config::set('tarablade.template_namespace', 'personal_blog');
         TarabladeFileParser::importScripts(__DIR__.'/TestAssets/index.html');
 
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
-        $this->assertFileExists(Tarablade::getTemplateNamespace('js/popper.min.js'));
+        $this->assertDirectoryExists(Tarablade::getPublicPath());
+        $this->assertFileExists(Tarablade::getPublicPath('js/popper.min.js'));
     }
 
     /** @test */
@@ -57,12 +61,12 @@ class TarabladeFileParserTest extends TestCase
         $parser = new TarabladeFileParser(__DIR__.'/TestAssets/index.html');
         $parser->importAssetsFromAllTemplates();
 
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace());
-        $this->assertFileExists(Tarablade::getTemplateNamespace('img/c-logo.png'));
-        $this->assertFileExists(Tarablade::getTemplateNamespace('img/favicon.ico'));
-        $this->assertFileExists(Tarablade::getTemplateNamespace('css/main.css'));
-        $this->assertFileExists(Tarablade::getTemplateNamespace('css/sassy.css'));
-        $this->assertFileExists(Tarablade::getTemplateNamespace('js/custom.js'));
+        $this->assertDirectoryExists(Tarablade::getPublicPath());
+        $this->assertFileExists(Tarablade::getPublicPath('img/c-logo.png'));
+        $this->assertFileExists(Tarablade::getPublicPath('img/favicon.ico'));
+        $this->assertFileExists(Tarablade::getPublicPath('css/main.css'));
+        $this->assertFileExists(Tarablade::getPublicPath('css/sassy.css'));
+        $this->assertFileExists(Tarablade::getPublicPath('js/custom.js'));
     }
 
     /** @test */
@@ -79,17 +83,44 @@ class TarabladeFileParserTest extends TestCase
     {
         Config::set('tarablade.template_namespace', 'personal_blog');
 
-        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/main.css');
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace('img/blog'));
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace('img/elements'));
+        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/main.css', __DIR__.'/TestAssets/index.html');
+        $this->assertDirectoryExists(Tarablade::getPublicPath('img/blog'));
+        $this->assertDirectoryExists(Tarablade::getPublicPath('img/elements'));
 
-        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/font-awesome.min.css');
-        $this->assertDirectoryExists(Tarablade::getTemplateNamespace('fonts'));
+        TarabladeFileParser::parseCssForAssets(__DIR__.'/TestAssets/css/font-awesome.min.css', __DIR__.'/TestAssets/index.html');
+        $this->assertDirectoryExists(Tarablade::getPublicPath('fonts'));
+    }
+
+    /** @test */
+    public function tarablade_can_create_a_route()
+    {
+        Config::set('tarablade.template_namespace', 'personal_blog');
+        $file = __DIR__.'/TestAssets/index.html';
+        $routesFile = base_path('routes'.DIRECTORY_SEPARATOR.'web.php');
+
+        $this->assertNotNull(TarabladeFileParser::createRoute($file));
+        $this->assertEquals('personal_blog.index', TarabladeFileParser::createRoute($file));
+        $this->assertTrue(strpos(file_get_contents($routesFile), "->name('personal_blog.index');") !== false);
     }
 
     /** @test */
     public function tarablade_can_convert_html_files_to_blade_files()
     {
+        Config::set('tarablade.template_namespace', 'personal_blog');
         TarabladeFileParser::convertToBladeTemplate(__DIR__.'/TestAssets/index.html');
+
+        $this->assertFileExists(Tarablade::getViewsResourcePath('index.blade.php'));
+    }
+
+    /** @test */
+    public function tarablade_can_replace_text_in_file()
+    {
+        Config::set('tarablade.template_namespace', 'personal_blog');
+        mkdir(Tarablade::getPublicPath());
+        file_put_contents(Tarablade::getPublicPath('test.html'), 'this is a cool test');
+        TarabladeFileParser::replaceTextInFile(Tarablade::getPublicPath('test.html'), 'cool', 'great');
+
+        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath('test.html')), 'cool') == false);
+        $this->assertTrue(strpos(file_get_contents(Tarablade::getPublicPath('test.html')), 'great') !== false);
     }
 }

@@ -8,6 +8,7 @@ use Mwakisha\Tarablade\TarabladeFileParser;
 
 class ImportCommand extends Command
 {
+    // @codeCoverageIgnoreStart
     protected $signature = 'tarablade:import';
 
     protected $description = 'Converts HTML files in the specified directory to blade files and imports them into 
@@ -15,11 +16,6 @@ class ImportCommand extends Command
 
     public function handle()
     {
-        if (is_null(config('tarablade'))) {
-            return $this->warn('Please publish the config file by running '.
-                                      "'php artisan vendor:publish --tag=tarablade-config'");
-        }
-
         $this->info("                        
              _____                _     _           _      
             /__   \__ _ _ __ __ _| |__ | | __ _  __| | ___ 
@@ -28,8 +24,6 @@ class ImportCommand extends Command
              \/   \__,_|_|  \__,_|_.__/|_|\__,_|\__,_|\___|
                                                
         ");
-
-        sleep(1);
 
         Tarablade::validateTemplateNamespace();
 
@@ -44,13 +38,16 @@ class ImportCommand extends Command
             Tarablade::validateFileExists($path.'/index.html');
             $this->comment('index.html file found');
 
-            $this->info('Starting template import...');
+            $this->info('Starting template import');
 
             $parser = new TarabladeFileParser(Tarablade::getAbsolutePath($path).'/index.html');
-            $this->info('Importing assets from templates...');
+            $this->info('Importing assets and templates. Please wait...');
             $parser->importAssetsFromAllTemplates();
+            $this->comment('Import complete. Run php artisan serve then visit http://localhost:8000/'.Tarablade::getTemplateNamespace().'/index');
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
         }
     }
+
+    // @codeCoverageIgnoreEnd
 }

@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 
 class TarabladeServiceProvider extends ServiceProvider
 {
+    // @codeCoverageIgnoreStart
+
     public function boot()
     {
         if ($this->app->runningInConsole()) {
@@ -27,4 +29,6 @@ class TarabladeServiceProvider extends ServiceProvider
             __DIR__.'/../config/tarablade.php' => config_path('tarablade.php'),
         ], 'tarablade-config');
     }
+
+    // @codeCoverageIgnoreEnd
 }
