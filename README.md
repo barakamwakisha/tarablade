@@ -57,3 +57,7 @@ I would love to hear from you.
 I am always on Twitter, and it is a great way to communicate with me or follow me. [Check me out on Twitter](https://twitter.com/_mwaks).
 
 You can also email me at barakamwakisha@gmail.com for any other requests.
+
+If you like the library, please consider buying me a coffee :)
+
+<a href="https://www.buymeacoffee.com/D2XWg6u" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
