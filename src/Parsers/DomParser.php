@@ -1,6 +1,6 @@
 <?php
 
-namespace Mwakisha\Tarablade;
+namespace Mwakisha\Tarablade\Parsers;
 
 use HungCP\PhpSimpleHtmlDom\HtmlDomParser;
 use Illuminate\Support\Facades\File;

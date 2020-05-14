@@ -1,18 +1,27 @@
 <?php
 
-namespace Mwakisha\Tarablade;
+namespace Mwakisha\Tarablade\Parsers;
 
 use DOMDocument;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Mwakisha\Tarablade\Tarablade;
+use Mwakisha\Tarablade\Util\FileSystemUtils;
 
 class TarabladeFileParser
 {
     protected $filename;
 
+    private static $pathUtils;
+
+    private static $fsUtils;
+
+
     public function __construct($filename)
     {
         $this->filename = $filename;
+        self::$pathUtils = Tarablade::getInstance()->pathUtils;
+        self::$fsUtils = Tarablade::getInstance()->fsUtils;
     }
 
     public static function importImages($templatePath)
@@ -21,17 +30,17 @@ class TarabladeFileParser
 
         foreach ($html->find('img') as $image) {
             if ($image->src && !self::isRemoteUri($image->src)) {
-                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceTemplateDirectory = dirname(self::$pathUtils->getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
                 $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
 
                 if (
-                    !File::exists(Tarablade::getPublicPath($sourceImageDirectory))
+                    !File::exists(self::$pathUtils->getPublicPath($sourceImageDirectory))
                     && File::exists($sourceImagePath)
                 ) {
-                    Tarablade::copy(
+                    self::$fsUtils->copy(
                         $sourceImagePath,
-                        Tarablade::getPublicPath($sourceImageDirectory)
+                        self::$pathUtils->getPublicPath($sourceImageDirectory)
                     );
                 }
             }
@@ -43,17 +52,17 @@ class TarabladeFileParser
                 && !self::isRemoteUri($favicon->href)
                 && ($favicon->rel == 'shortcut icon' || $favicon->rel == 'icon')
             ) {
-                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceTemplateDirectory = dirname(self::$pathUtils->getAbsolutePath($templatePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$favicon->href;
                 $sourceImageDirectory = explode($sourceTemplateDirectory, $sourceImagePath)[1];
 
                 if (
-                    !File::exists(Tarablade::getPublicPath($sourceImageDirectory))
+                    !File::exists(self::$pathUtils->getPublicPath($sourceImageDirectory))
                     && File::exists($sourceImagePath)
                 ) {
-                    Tarablade::copy(
+                    self::$fsUtils->copy(
                         $sourceImagePath,
-                        Tarablade::getPublicPath($sourceImageDirectory)
+                        self::$pathUtils->getPublicPath($sourceImageDirectory)
                     );
                 }
             }
@@ -70,18 +79,18 @@ class TarabladeFileParser
                 && !self::isRemoteUri($style->href)
                 && $style->rel == 'stylesheet'
             ) {
-                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceTemplateDirectory = dirname(self::$pathUtils->getAbsolutePath($templatePath));
                 $sourceStylePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$style->href;
                 $sourceStyleDirectory = explode($sourceTemplateDirectory, $sourceStylePath)[1];
 
                 if (
-                    !File::exists(Tarablade::getPublicPath($sourceStyleDirectory))
+                    !File::exists(self::$pathUtils->getPublicPath($sourceStyleDirectory))
                     && File::exists($sourceStylePath)
                 ) {
                     self::parseCssForAssets($sourceStylePath, $templatePath);
-                    Tarablade::copy(
+                    self::$fsUtils->copy(
                         $sourceStylePath,
-                        Tarablade::getPublicPath($sourceStyleDirectory)
+                        self::$pathUtils->getPublicPath($sourceStyleDirectory)
                     );
                 }
             }
@@ -94,17 +103,17 @@ class TarabladeFileParser
 
         foreach ($html->find('script') as $script) {
             if ($script->src && !self::isRemoteUri($script->src)) {
-                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($templatePath));
+                $sourceTemplateDirectory = dirname(self::$pathUtils->getAbsolutePath($templatePath));
                 $sourceScriptPath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$script->src;
                 $sourceScriptDirectory = explode($sourceTemplateDirectory, $sourceScriptPath)[1];
 
                 if (
-                    !File::exists(Tarablade::getPublicPath($sourceScriptDirectory))
+                    !File::exists(self::$pathUtils->getPublicPath($sourceScriptDirectory))
                     && File::exists($sourceScriptPath)
                 ) {
-                    Tarablade::copy(
+                    self::$fsUtils->copy(
                         $sourceScriptPath,
-                        Tarablade::getPublicPath($sourceScriptDirectory)
+                        self::$pathUtils->getPublicPath($sourceScriptDirectory)
                     );
                 }
             }
@@ -128,15 +137,15 @@ class TarabladeFileParser
                 }
 
                 $assetFilePath = strpos(basename($match), '?') ? explode('?', $match)[0] : $match;
-                $absolutePath = Tarablade::getAbsolutePath(dirname($filePath).DIRECTORY_SEPARATOR.$assetFilePath);
-                $sourceAssetDirectory = ltrim(explode(Tarablade::getAbsolutePath(dirname($templatePath)), $absolutePath)[1], "\.\/\\");
+                $absolutePath = self::$pathUtils->getAbsolutePath(dirname($filePath).DIRECTORY_SEPARATOR.$assetFilePath);
+                $sourceAssetDirectory = ltrim(explode(self::$pathUtils->getAbsolutePath(dirname($templatePath)), $absolutePath)[1], "\.\/\\");
                 if (
-                    !File::exists(Tarablade::getPublicPath($sourceAssetDirectory))
+                    !File::exists(self::$pathUtils->getPublicPath($sourceAssetDirectory))
                     && File::exists($absolutePath)
                 ) {
-                    Tarablade::copy(
+                    self::$fsUtils->copy(
                         $absolutePath,
-                        Tarablade::getPublicPath($sourceAssetDirectory)
+                        self::$pathUtils->getPublicPath($sourceAssetDirectory)
                     );
                 }
             }
@@ -146,9 +155,9 @@ class TarabladeFileParser
     public static function createRoute($filepath)
     {
         $filename = Str::snake(pathinfo($filepath)['filename']);
-        $routeName = ltrim(Tarablade::getTemplateNamespace(), "\.\/\\").'.'.$filename;
-        $routePath = Tarablade::getTemplateNamespace().'/'.$filename;
-        $viewName = Tarablade::getTemplateNamespace().'.'.$filename;
+        $routeName = ltrim(self::$pathUtils->getTemplateNamespace(), "\.\/\\").'.'.$filename;
+        $routePath = self::$pathUtils->getTemplateNamespace().'/'.$filename;
+        $viewName = self::$pathUtils->getTemplateNamespace().'.'.$filename;
         $routesFile = base_path('routes'.DIRECTORY_SEPARATOR.'web.php');
 
         // Orchestra testbench does not have the routes file, this makes the test pass
@@ -174,7 +183,7 @@ class TarabladeFileParser
     public static function convertToBladeTemplate($filePath)
     {
         $filename = Str::snake(pathinfo($filePath)['filename']).'.blade.php';
-        $outputFilepath = Tarablade::getViewsResourcePath($filename);
+        $outputFilepath = self::$pathUtils->getViewsResourcePath($filename);
         if (File::exists($outputFilepath)) {
             return;
         }
@@ -187,18 +196,18 @@ class TarabladeFileParser
         $dom->formatOutput = true;
         $dom->saveHTMLFile($filePath);
 
-        Tarablade::copy($filePath, $outputFilepath);
+        self::$fsUtils->copy($filePath, $outputFilepath);
 
         $html = DomParser::getHtml($outputFilepath);
 
         foreach ($html->find('img') as $image) {
             if ($image->src && !self::isRemoteUri($image->src)) {
-                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($filePath));
+                $sourceTemplateDirectory = dirname(self::$pathUtils->getAbsolutePath($filePath));
                 $sourceImagePath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$image->src;
                 $sourceImageDirectory = ltrim(explode($sourceTemplateDirectory, $sourceImagePath)[1], "\.\/\\");
 
                 $oldMarkup = $image->outertext;
-                $image->src = "{{asset('".Tarablade::getTemplateNamespace($sourceImageDirectory)."')}}";
+                $image->src = "{{asset('".self::$pathUtils->getTemplateNamespace($sourceImageDirectory)."')}}";
 
                 self::replaceTextInFile($outputFilepath, $oldMarkup, $image->outertext);
             }
@@ -206,12 +215,12 @@ class TarabladeFileParser
 
         foreach ($html->find('link') as $link) {
             if ($link->href && !self::isRemoteUri($link->href)) {
-                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($filePath));
+                $sourceTemplateDirectory = dirname(self::$pathUtils->getAbsolutePath($filePath));
                 $sourceLinkPath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$link->href;
                 $sourceLinkDirectory = ltrim(explode($sourceTemplateDirectory, $sourceLinkPath)[1], "\.\/\\");
 
                 $oldMarkup = $link->outertext;
-                $link->href = "{{asset('".Tarablade::getTemplateNamespace($sourceLinkDirectory)."')}}";
+                $link->href = "{{asset('".self::$pathUtils->getTemplateNamespace($sourceLinkDirectory)."')}}";
 
                 self::replaceTextInFile($outputFilepath, $oldMarkup, $link->outertext);
             }
@@ -219,12 +228,12 @@ class TarabladeFileParser
 
         foreach ($html->find('script') as $script) {
             if ($script->src && !self::isRemoteUri($script->src)) {
-                $sourceTemplateDirectory = dirname(Tarablade::getAbsolutePath($filePath));
+                $sourceTemplateDirectory = dirname(self::$pathUtils->getAbsolutePath($filePath));
                 $sourceScriptPath = $sourceTemplateDirectory.DIRECTORY_SEPARATOR.$script->src;
                 $sourceScriptDirectory = ltrim(explode($sourceTemplateDirectory, $sourceScriptPath)[1], "\.\/\\");
 
                 $oldMarkup = $script->outertext;
-                $script->src = "{{asset('".Tarablade::getTemplateNamespace($sourceScriptDirectory)."')}}";
+                $script->src = "{{asset('".self::$pathUtils->getTemplateNamespace($sourceScriptDirectory)."')}}";
 
                 self::replaceTextInFile($outputFilepath, $oldMarkup, $script->outertext);
             }
@@ -236,7 +245,7 @@ class TarabladeFileParser
                 && $anchorLink->href != ''
                 && $anchorLink->href != '#'
             ) {
-                $templatePath = realpath(Tarablade::getAbsolutePath(dirname($filePath)
+                $templatePath = realpath(self::$pathUtils->getAbsolutePath(dirname($filePath)
                     .DIRECTORY_SEPARATOR.
                     $anchorLink->href));
 
@@ -265,7 +274,7 @@ class TarabladeFileParser
                 && $anchorLink->href != ''
                 && $anchorLink->href != '#'
             ) {
-                $templatePath = realpath(Tarablade::getAbsolutePath(dirname($this->filename)
+                $templatePath = realpath(self::$pathUtils->getAbsolutePath(dirname($this->filename)
                     .DIRECTORY_SEPARATOR.
                     $anchorLink->href));
 

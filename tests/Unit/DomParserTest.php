@@ -2,7 +2,7 @@
 
 namespace Mwakisha\Tarablade\Tests\Unit;
 
-use Mwakisha\Tarablade\DomParser;
+use Mwakisha\Tarablade\Parsers\DomParser;
 use Orchestra\Testbench\TestCase;
 
 class DomParserTest extends TestCase
